@@ -6,7 +6,7 @@
 > It does not modify attendance records, interact with backend APIs, or bypass LMS functionality.
 >
 > This project is not affiliated with or endorsed by Bridgeon.
->
+
 > [!NOTE]
 > This userscript only enhances the visual experience by calculating statistics from information already visible to the user.
 >
