@@ -1,5 +1,12 @@
 # bridgeon-timer
 
+> [!WARNING]
+> This is an unofficial client-side visualization tool that runs locally in the user's browser.
+>
+> It does not modify attendance records, interact with backend APIs, or bypass LMS functionality.
+>
+> This project is not affiliated with or endorsed by Bridgeon.
+
 Step 1: Install Tampermonkey
 
 ![Image Description](image/image.png)
