@@ -23,3 +23,8 @@ Click the + button or Create a new script.
 Delete the default sample code.
 Paste bridgeon-attendance.user.js script.
 Press Ctrl + S to save.
+
+
+refresh https://student.bridgeon.in/attendance
+
+unpin when you pin the website, after doing you can pin
