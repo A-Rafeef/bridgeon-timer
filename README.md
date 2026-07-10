@@ -21,5 +21,5 @@ Step 3: Create a New Script
 ![Image Description](image/4.png)
 Click the + button or Create a new script.
 Delete the default sample code.
-Paste your attendance badge script.
+Paste bridgeon-attendance.user.js script.
 Press Ctrl + S to save.
