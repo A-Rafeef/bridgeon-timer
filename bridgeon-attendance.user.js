@@ -1,7 +1,8 @@
+
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.0.7
+// @version      1.0.6
 // @description  Bridgeon attendance visualization tool
 // @match        https://student.bridgeon.in/attendance
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -13,13 +14,15 @@
 // ==/UserScript==
 
 (function () {
+
     'use strict';
+
 
     // =========================================================
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
-    const CURRENT_VERSION = '1.0.7';
+    const CURRENT_VERSION = '1.0.6';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -28,12 +31,24 @@
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js';
 
 
+    // Latest version detected from GitHub
+    let latestVersion = null;
+
+    // Whether an update is available
+    let updateAvailable = false;
+
+
+    // =========================================================
+    // VERSION COMPARISON
+    // =========================================================
+
     function compareVersions(v1, v2) {
 
         const a = v1.split('.').map(Number);
         const b = v2.split('.').map(Number);
 
-        const length = Math.max(a.length, b.length);
+        const length =
+            Math.max(a.length, b.length);
 
         for (let i = 0; i < length; i++) {
 
@@ -53,6 +68,10 @@
     }
 
 
+    // =========================================================
+    // INSTALL UPDATE
+    // =========================================================
+
     function installUpdate() {
 
         GM_openInTab(
@@ -66,17 +85,30 @@
     }
 
 
+    // =========================================================
+    // CHECK FOR UPDATE
+    // =========================================================
+
     function checkForUpdate(showMessage = false) {
 
         GM_xmlhttpRequest({
 
             method: 'GET',
 
-            url: VERSION_URL + '?t=' + Date.now(),
+            url:
+                VERSION_URL +
+                '?t=' +
+                Date.now(),
 
             onload: function (response) {
 
                 if (response.status !== 200) {
+
+                    console.error(
+                        '[Bridgeon] GitHub returned:',
+                        response.status
+                    );
+
 
                     if (showMessage) {
 
@@ -94,13 +126,23 @@
                 try {
 
                     const data =
-                        JSON.parse(response.responseText);
+                        JSON.parse(
+                            response.responseText
+                        );
 
-                    const latestVersion =
-                        String(data.version || '').trim();
+
+                    const version =
+                        String(
+                            data.version || ''
+                        ).trim();
 
 
-                    if (!latestVersion) {
+                    if (!version) {
+
+                        console.error(
+                            '[Bridgeon] Invalid version.json'
+                        );
+
 
                         if (showMessage) {
 
@@ -111,6 +153,10 @@
 
                         return;
                     }
+
+
+                    latestVersion =
+                        version;
 
 
                     const result =
@@ -126,10 +172,18 @@
 
                     if (result > 0) {
 
+                        updateAvailable = true;
+
+
+                        // Tampermonkey menu
                         GM_registerMenuCommand(
                             `🆕 Update available: v${latestVersion}`,
                             installUpdate
                         );
+
+
+                        // Refresh badge immediately
+                        updateBadge();
 
 
                         if (showMessage) {
@@ -144,6 +198,7 @@
 
 
                             if (update) {
+
                                 installUpdate();
                             }
                         }
@@ -156,6 +211,11 @@
                     // =================================================
 
                     else {
+
+                        updateAvailable = false;
+
+                        updateBadge();
+
 
                         if (showMessage) {
 
@@ -219,12 +279,16 @@
     GM_registerMenuCommand(
         '🔄 Check for Updates',
         function () {
+
             checkForUpdate(true);
         }
     );
 
 
-    // Automatically check GitHub
+    // =========================================================
+    // INITIAL UPDATE CHECK
+    // =========================================================
+
     checkForUpdate(false);
 
 
@@ -232,9 +296,14 @@
     // ATTENDANCE SETTINGS
     // =========================================================
 
-    const OFFICE_START = 9 * 60;
-    const OFFICE_END = 17 * 60;
-    const MAX_OUTSIDE = 90;
+    const OFFICE_START =
+        9 * 60;
+
+    const OFFICE_END =
+        17 * 60;
+
+    const MAX_OUTSIDE =
+        90;
 
 
     // =========================================================
@@ -244,23 +313,39 @@
     function parseTime(timeString) {
 
         const [time, period] =
-            timeString.trim().split(' ');
+            timeString
+                .trim()
+                .split(' ');
+
 
         let [hours, minutes] =
-            time.split(':').map(Number);
+            time
+                .split(':')
+                .map(Number);
 
 
-        if (period === 'PM' && hours !== 12) {
+        if (
+            period === 'PM' &&
+            hours !== 12
+        ) {
+
             hours += 12;
         }
 
 
-        if (period === 'AM' && hours === 12) {
+        if (
+            period === 'AM' &&
+            hours === 12
+        ) {
+
             hours = 0;
         }
 
 
-        return hours * 60 + minutes;
+        return (
+            hours * 60 +
+            minutes
+        );
     }
 
 
@@ -271,18 +356,26 @@
     function formatMinutes(minutes) {
 
         const h =
-            Math.floor(minutes / 60);
+            Math.floor(
+                minutes / 60
+            );
+
 
         const m =
             minutes % 60;
 
 
-        if (h > 0 && m > 0) {
+        if (
+            h > 0 &&
+            m > 0
+        ) {
+
             return `${h}h ${m}m`;
         }
 
 
         if (h > 0) {
+
             return `${h}h`;
         }
 
@@ -298,8 +391,15 @@
     function getAttendanceLogs() {
 
         const rawLogs =
-            [...document.querySelectorAll('.MuiChip-label')]
-                .map(el => el.innerText.trim());
+            [
+                ...document.querySelectorAll(
+                    '.MuiChip-label'
+                )
+            ]
+                .map(
+                    el =>
+                        el.innerText.trim()
+                );
 
 
         const logs = [];
@@ -315,19 +415,31 @@
 
             const time =
                 log
-                    .replace('In - ', '')
-                    .replace('Out - ', '')
+                    .replace(
+                        'In - ',
+                        ''
+                    )
+                    .replace(
+                        'Out - ',
+                        ''
+                    )
                     .trim();
 
 
-            // Consecutive same action -> keep latest
+            // Consecutive same action
+            // -> keep latest
 
             if (
                 logs.length > 0 &&
-                logs[logs.length - 1].type === type
+                logs[
+                    logs.length - 1
+                ].type === type
             ) {
 
-                logs[logs.length - 1] = {
+                logs[
+                    logs.length - 1
+                ] = {
+
                     type,
                     time
                 };
@@ -337,6 +449,7 @@
             else {
 
                 logs.push({
+
                     type,
                     time
                 });
@@ -360,11 +473,13 @@
 
 
         if (!logs.length) {
+
             return null;
         }
 
 
         let officeMinutes = 0;
+
         let outsideMinutes = 0;
 
 
@@ -384,11 +499,15 @@
             ) {
 
                 let start =
-                    parseTime(logs[i].time);
+                    parseTime(
+                        logs[i].time
+                    );
 
 
                 let end =
-                    parseTime(logs[i + 1].time);
+                    parseTime(
+                        logs[i + 1].time
+                    );
 
 
                 start =
@@ -430,11 +549,15 @@
             ) {
 
                 let out =
-                    parseTime(logs[i].time);
+                    parseTime(
+                        logs[i].time
+                    );
 
 
                 let nextIn =
-                    parseTime(logs[i + 1].time);
+                    parseTime(
+                        logs[i + 1].time
+                    );
 
 
                 if (
@@ -460,7 +583,9 @@
                     );
 
 
-                if (nextIn > out) {
+                if (
+                    nextIn > out
+                ) {
 
                     outsideMinutes +=
                         nextIn - out;
@@ -475,21 +600,27 @@
 
         const firstInLog =
             logs.find(
-                log => log.type === 'IN'
+                log =>
+                    log.type === 'IN'
             );
 
 
         const firstIn =
             firstInLog
-                ? parseTime(firstInLog.time)
+                ? parseTime(
+                    firstInLog.time
+                )
                 : OFFICE_START;
 
 
         let statusText;
+
         let statusColor;
 
 
-        if (firstIn <= OFFICE_START) {
+        if (
+            firstIn <= OFFICE_START
+        ) {
 
             statusText =
                 'On Time';
@@ -514,13 +645,17 @@
         // =====================================================
 
         const currentStatus =
-            logs[logs.length - 1].type === 'IN'
+            logs[
+                logs.length - 1
+            ].type === 'IN'
                 ? 'IN'
                 : 'OUT';
 
 
         const lastLog =
-            logs[logs.length - 1];
+            logs[
+                logs.length - 1
+            ];
 
 
         const lastAction =
@@ -534,29 +669,46 @@
         const remainingOutside =
             Math.max(
                 0,
-                MAX_OUTSIDE - outsideMinutes
+                MAX_OUTSIDE -
+                outsideMinutes
             );
 
 
         const usagePercent =
             Math.min(
                 100,
-                (outsideMinutes / MAX_OUTSIDE) * 100
+                (
+                    outsideMinutes /
+                    MAX_OUTSIDE
+                ) * 100
             );
 
 
         let outsideColor;
 
-        if (outsideMinutes < 60) {
-            outsideColor = '#16a34a';
+
+        if (
+            outsideMinutes < 60
+        ) {
+
+            outsideColor =
+                '#16a34a';
+
         }
 
-        else if (outsideMinutes < 90) {
-            outsideColor = '#d97706';
+        else if (
+            outsideMinutes < 90
+        ) {
+
+            outsideColor =
+                '#d97706';
+
         }
 
         else {
-            outsideColor = '#dc2626';
+
+            outsideColor =
+                '#dc2626';
         }
 
 
@@ -590,12 +742,15 @@
                 'bridgeon-badge'
             )
         ) {
+
             return;
         }
 
 
         const badge =
-            document.createElement('div');
+            document.createElement(
+                'div'
+            );
 
 
         badge.id =
@@ -616,7 +771,7 @@
             '20px';
 
         badge.style.width =
-            '210px';
+            '215px';
 
         badge.style.boxSizing =
             'border-box';
@@ -682,6 +837,7 @@
 
 
         if (!badge) {
+
             return;
         }
 
@@ -710,6 +866,7 @@
 
 
         if (!badge) {
+
             return;
         }
 
@@ -741,6 +898,7 @@
 
 
         if (!data) {
+
             return;
         }
 
@@ -752,6 +910,7 @@
 
 
         if (!badge) {
+
             return;
         }
 
@@ -774,7 +933,9 @@
 
         badge.innerHTML = `
 
-            <!-- HEADER -->
+            <!-- =========================================
+                 HEADER
+            ========================================== -->
 
             <div style="
                 display:flex;
@@ -819,7 +980,76 @@
             </div>
 
 
-            <!-- STATUS -->
+            <!-- =========================================
+                 UPDATE AVAILABLE
+            ========================================== -->
+
+            ${
+                updateAvailable
+                    ? `
+
+                    <button
+                        id="bridgeon-update-button"
+                        style="
+                            width:100%;
+                            border:1px solid #bfdbfe;
+                            background:#eff6ff;
+                            color:#1d4ed8;
+                            border-radius:8px;
+                            padding:9px 10px;
+                            margin-bottom:11px;
+                            text-align:left;
+                            cursor:pointer;
+                            font-family:inherit;
+                        "
+                    >
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            justify-content:space-between;
+                            gap:8px;
+                        ">
+
+                            <div>
+
+                                <div style="
+                                    font-size:10px;
+                                    font-weight:700;
+                                    margin-bottom:2px;
+                                ">
+                                    🆕 Update available
+                                </div>
+
+                                <div style="
+                                    font-size:9px;
+                                    color:#60a5fa;
+                                ">
+                                    New version v${latestVersion}
+                                </div>
+
+                            </div>
+
+
+                            <span style="
+                                font-size:14px;
+                                font-weight:700;
+                            ">
+                                →
+                            </span>
+
+                        </div>
+
+                    </button>
+
+                    `
+                    : ''
+            }
+
+
+            <!-- =========================================
+                 STATUS
+            ========================================== -->
 
             <div style="
                 display:flex;
@@ -846,7 +1076,9 @@
             </div>
 
 
-            <!-- LAST ACTION -->
+            <!-- =========================================
+                 LAST ACTION
+            ========================================== -->
 
             <div style="
                 font-size:10px;
@@ -857,7 +1089,9 @@
             </div>
 
 
-            <!-- STATS -->
+            <!-- =========================================
+                 STATS
+            ========================================== -->
 
             <div style="
                 display:grid;
@@ -889,7 +1123,9 @@
                         font-weight:700;
                         color:#111827;
                     ">
-                        ${formatMinutes(data.officeMinutes)}
+                        ${formatMinutes(
+                            data.officeMinutes
+                        )}
                     </div>
 
                 </div>
@@ -917,7 +1153,9 @@
                         font-weight:700;
                         color:${data.outsideColor};
                     ">
-                        ${formatMinutes(data.outsideMinutes)}
+                        ${formatMinutes(
+                            data.outsideMinutes
+                        )}
                     </div>
 
                 </div>
@@ -925,7 +1163,9 @@
             </div>
 
 
-            <!-- OUTSIDE PROGRESS -->
+            <!-- =========================================
+                 OUTSIDE LIMIT
+            ========================================== -->
 
             <div style="
                 display:flex;
@@ -946,11 +1186,15 @@
                     font-weight:600;
                     color:#374151;
                 ">
-                    ${formatMinutes(data.remainingOutside)} left
+                    ${formatMinutes(
+                        data.remainingOutside
+                    )} left
                 </span>
 
             </div>
 
+
+            <!-- PROGRESS -->
 
             <div style="
                 width:100%;
@@ -972,7 +1216,9 @@
             </div>
 
 
-            <!-- CURRENT STATUS -->
+            <!-- =========================================
+                 CURRENT STATUS
+            ========================================== -->
 
             <div style="
                 display:flex;
@@ -1004,7 +1250,9 @@
             </div>
 
 
-            <!-- GITHUB -->
+            <!-- =========================================
+                 GITHUB
+            ========================================== -->
 
             <a
                 href="https://github.com/A-Rafeef"
@@ -1024,8 +1272,12 @@
                     font-weight:600;
                     transition:color .2s ease;
                 "
-                onmouseover="this.style.color='#111827'"
-                onmouseout="this.style.color='#6b7280'"
+                onmouseover="
+                    this.style.color='#111827'
+                "
+                onmouseout="
+                    this.style.color='#6b7280'
+                "
             >
 
                 <svg
@@ -1081,6 +1333,48 @@
             </a>
 
         `;
+
+
+        // =====================================================
+        // UPDATE BUTTON EVENT
+        // =====================================================
+
+        const updateButton =
+            document.getElementById(
+                'bridgeon-update-button'
+            );
+
+
+        if (updateButton) {
+
+            updateButton.onclick =
+                function () {
+
+                    installUpdate();
+                };
+
+
+            updateButton.onmouseenter =
+                function () {
+
+                    this.style.background =
+                        '#dbeafe';
+
+                    this.style.borderColor =
+                        '#93c5fd';
+                };
+
+
+            updateButton.onmouseleave =
+                function () {
+
+                    this.style.background =
+                        '#eff6ff';
+
+                    this.style.borderColor =
+                        '#bfdbfe';
+                };
+        }
     }
 
 
@@ -1105,7 +1399,6 @@
         else {
 
             hideBadge();
-
         }
     }
 
@@ -1117,6 +1410,14 @@
     createBadge();
 
 
+    // Initial badge update
+    updateBadge();
+
+
+    // =========================================================
+    // LIVE UPDATE
+    // =========================================================
+
     setInterval(() => {
 
         updateBadge();
@@ -1125,4 +1426,7 @@
 
     }, 1000);
 
+
 })();
+
+v
