@@ -19,7 +19,7 @@
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
-    const CURRENT_VERSION = '1.0.6';
+    const CURRENT_VERSION = '1.0.7';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
