@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.4
+// @version      1.1.5
 // @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -31,7 +31,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.4';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.5';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -241,59 +241,39 @@
 
     const LOG_REGEX = /^(in|out)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm))$/i;
 
-    // Returns the currently expanded accordion section element (active date panel),
-    // or falls back to the full document if none can be identified.
+    // Returns the expanded MuiCollapse panel for the currently open date row.
+    // The real DOM is a <table>: each date is a <tr>, followed by another <tr>
+    // containing a MuiCollapse-root. When expanded, MuiCollapse-hidden is absent.
     function getActiveSection() {
-        // The expanded accordion icon lives inside the accordion summary.
-        // Walk up from it to find the MuiAccordion root, then read its details panel.
-        const expandIcon = document.querySelector('[data-testid="ExpandLessIcon"]');
-        if (expandIcon) {
-            // Go up until we hit the Accordion root (has MuiAccordion-root class)
-            let node = expandIcon.parentElement;
-            while (node && node !== document.body) {
-                if (
-                    node.classList.contains('MuiAccordion-root') ||
-                    node.classList.contains('MuiPaper-root')
-                ) {
-                    return node;
-                }
-                node = node.parentElement;
-            }
-        }
-        // Fallback: return document so caller can still attempt a search
-        return document;
+        // An expanded panel does NOT have the MuiCollapse-hidden class
+        const expanded = document.querySelector('.MuiCollapse-root:not(.MuiCollapse-hidden)');
+        return expanded || null;
     }
 
-    // Returns the date label text for the currently active accordion section.
+    // Returns the date text (e.g. "25 Sep 2026") for the currently expanded row.
+    // The ExpandLessIcon sits inside the date <tr>; first <td> of that row is the date.
     function getActiveDateLabel() {
-        const section = getActiveSection();
-        if (!section || section === document) return null;
+        const expandLessIcon = document.querySelector('[data-testid="ExpandLessIcon"]');
+        if (!expandLessIcon) return null;
 
-        // Try to find a date heading inside the accordion summary
-        // Bridgeon typically shows the date as plain text inside the summary bar
-        const summaryEl = section.querySelector('.MuiAccordionSummary-content');
-        if (summaryEl) {
-            // Find first non-empty text node or span that is NOT an icon
-            const candidates = summaryEl.querySelectorAll('p, span, div');
-            for (const el of candidates) {
-                const txt = (el.innerText || el.textContent || '').trim();
-                // A date string will contain a digit and be reasonably short
-                if (txt && txt.length < 40 && /\d/.test(txt) && el.children.length === 0) {
-                    return txt;
-                }
-            }
-            // Last resort: whole summary text
-            const raw = (summaryEl.innerText || summaryEl.textContent || '').trim();
-            if (raw) return raw.split('\n')[0].trim();
-        }
-        return null;
+        const tr = expandLessIcon.closest('tr');
+        if (!tr) return null;
+
+        const firstTd = tr.querySelector('td');
+        if (!firstTd) return null;
+
+        return (firstTd.innerText || firstTd.textContent || '').trim() || null;
     }
 
     function getAttendanceLogs() {
         if (!isAttendancePage()) return [];
 
-        // Only read chips inside the CURRENTLY ACTIVE (expanded) date section
+        // Scope chip reading to the currently expanded collapse panel ONLY.
+        // Chips exist in ALL rows (even collapsed ones are in the DOM),
+        // so querying the whole document would sum up all dates.
         const scope = getActiveSection();
+        if (!scope) return []; // no row expanded — nothing to show
+
         const chips = scope.querySelectorAll('.MuiChip-label');
         const logs = [];
 
@@ -1105,20 +1085,14 @@
             return;
         }
 
+        // Show badge ONLY when a date row is actually expanded (ExpandLessIcon present).
+        // NOTE: MuiChip-labels exist in ALL rows (even collapsed), so we cannot use
+        // chip presence as a fallback — it would always show the badge.
         const expandedIcon = document.querySelector('[data-testid="ExpandLessIcon"]');
-        const collapsedIcon = document.querySelector('[data-testid="ExpandMoreIcon"]');
-
         if (expandedIcon) {
             showBadge();
-        } else if (collapsedIcon) {
-            hideBadge();
         } else {
-            const hasChips = document.querySelector('.MuiChip-label');
-            if (hasChips) {
-                showBadge();
-            } else {
-                hideBadge();
-            }
+            hideBadge();
         }
     }
 
