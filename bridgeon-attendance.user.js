@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.0.1
+// @version      1.0.2
 // @description  Bridgeon attendance visualization tool
 // @match        https://student.bridgeon.in/attendance
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
