@@ -1,7 +1,8 @@
+
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.0.7
+// @version      1.0.8
 // @description  Bridgeon attendance visualization tool
 // @match        https://student.bridgeon.in/attendance
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -16,12 +17,11 @@
 
     'use strict';
 
-
     // =========================================================
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
-    const CURRENT_VERSION = '1.0.7';
+    const CURRENT_VERSION = '1.0.3';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -42,21 +42,15 @@
         const a = v1.split('.').map(Number);
         const b = v2.split('.').map(Number);
 
-        const length =
-            Math.max(a.length, b.length);
+        const length = Math.max(a.length, b.length);
 
         for (let i = 0; i < length; i++) {
 
             const num1 = a[i] || 0;
             const num2 = b[i] || 0;
 
-            if (num1 > num2) {
-                return 1;
-            }
-
-            if (num1 < num2) {
-                return -1;
-            }
+            if (num1 > num2) return 1;
+            if (num1 < num2) return -1;
         }
 
         return 0;
@@ -147,8 +141,7 @@
                     }
 
 
-                    latestVersion =
-                        version;
+                    latestVersion = version;
 
 
                     const result =
@@ -188,7 +181,6 @@
 
 
                             if (update) {
-
                                 installUpdate();
                             }
                         }
@@ -267,7 +259,6 @@
     GM_registerMenuCommand(
         '🔄 Check for Updates',
         function () {
-
             checkForUpdate(true);
         }
     );
@@ -315,7 +306,6 @@
             period === 'PM' &&
             hours !== 12
         ) {
-
             hours += 12;
         }
 
@@ -324,7 +314,6 @@
             period === 'AM' &&
             hours === 12
         ) {
-
             hours = 0;
         }
 
@@ -351,20 +340,13 @@
             minutes % 60;
 
 
-        if (
-            h > 0 &&
-            m > 0
-        ) {
-
+        if (h > 0 && m > 0) {
             return `${h}h ${m}m`;
         }
 
-
         if (h > 0) {
-
             return `${h}h`;
         }
-
 
         return `${m}m`;
     }
@@ -425,7 +407,6 @@
                 logs[
                     logs.length - 1
                 ] = {
-
                     type,
                     time
                 };
@@ -435,7 +416,6 @@
             else {
 
                 logs.push({
-
                     type,
                     time
                 });
@@ -459,13 +439,11 @@
 
 
         if (!logs.length) {
-
             return null;
         }
 
 
         let officeMinutes = 0;
-
         let outsideMinutes = 0;
 
 
@@ -489,7 +467,6 @@
                         logs[i].time
                     );
 
-
                 let end =
                     parseTime(
                         logs[i + 1].time
@@ -501,7 +478,6 @@
                         start,
                         OFFICE_START
                     );
-
 
                 end =
                     Math.min(
@@ -539,7 +515,6 @@
                         logs[i].time
                     );
 
-
                 let nextIn =
                     parseTime(
                         logs[i + 1].time
@@ -550,7 +525,6 @@
                     out >= OFFICE_END ||
                     nextIn <= OFFICE_START
                 ) {
-
                     continue;
                 }
 
@@ -561,7 +535,6 @@
                         OFFICE_START
                     );
 
-
                 nextIn =
                     Math.min(
                         nextIn,
@@ -569,9 +542,7 @@
                     );
 
 
-                if (
-                    nextIn > out
-                ) {
+                if (nextIn > out) {
 
                     outsideMinutes +=
                         nextIn - out;
@@ -600,7 +571,6 @@
 
 
         let statusText;
-
         let statusColor;
 
 
@@ -612,7 +582,7 @@
                 'On Time';
 
             statusColor =
-                '#2563eb';
+                '#65e6a4';
 
         }
 
@@ -622,7 +592,7 @@
                 `Late ${firstIn - OFFICE_START}m`;
 
             statusColor =
-                '#dc2626';
+                '#ff7f96';
         }
 
 
@@ -678,7 +648,7 @@
         ) {
 
             outsideColor =
-                '#16a34a';
+                '#65e6a4';
 
         }
 
@@ -687,14 +657,14 @@
         ) {
 
             outsideColor =
-                '#d97706';
+                '#f0c66b';
 
         }
 
         else {
 
             outsideColor =
-                '#dc2626';
+                '#ff7f96';
         }
 
 
@@ -718,6 +688,50 @@
 
 
     // =========================================================
+    // GLASS THEME
+    // =========================================================
+
+    const GLASS = {
+
+        background:
+            'rgba(10, 14, 22, 0.58)',
+
+        backgroundStrong:
+            'rgba(8, 12, 19, 0.72)',
+
+        card:
+            'rgba(255, 255, 255, 0.035)',
+
+        cardHover:
+            'rgba(255, 255, 255, 0.055)',
+
+        border:
+            'rgba(255, 255, 255, 0.09)',
+
+        borderStrong:
+            'rgba(255, 255, 255, 0.13)',
+
+        text:
+            '#d7dde7',
+
+        textMuted:
+            '#8490a3',
+
+        textDim:
+            '#657184',
+
+        accent:
+            '#78a9ff',
+
+        blur:
+            'blur(18px) saturate(135%)',
+
+        shadow:
+            '0 16px 40px rgba(0, 0, 0, 0.28)'
+    };
+
+
+    // =========================================================
     // CREATE BADGE
     // =========================================================
 
@@ -728,7 +742,6 @@
                 'bridgeon-badge'
             )
         ) {
-
             return;
         }
 
@@ -744,70 +757,94 @@
 
 
         // =====================================================
-        // MINIMAL GLASSMORPHISM DESIGN
+        // MAIN GLASS CONTAINER
         // =====================================================
 
-        badge.style.position =
-            'fixed';
+        Object.assign(
+            badge.style,
+            {
 
-        badge.style.top =
-            '20px';
+                position:
+                    'fixed',
 
-        badge.style.right =
-            '20px';
+                top:
+                    '20px',
 
-        badge.style.width =
-            '215px';
+                right:
+                    '20px',
 
-        badge.style.boxSizing =
-            'border-box';
+                width:
+                    '220px',
 
-        badge.style.background =
-            'rgba(255, 255, 255, 0.72)';
+                boxSizing:
+                    'border-box',
 
-        badge.style.border =
-            '1px solid rgba(255, 255, 255, 0.75)';
+                padding:
+                    '13px',
 
-        badge.style.borderRadius =
-            '14px';
+                zIndex:
+                    '999999',
 
-        badge.style.padding =
-            '14px';
+                color:
+                    GLASS.text,
 
-        badge.style.zIndex =
-            '999999';
+                fontFamily:
+                    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 
-        badge.style.color =
-            '#111827';
+                background:
+                    GLASS.background,
 
-        badge.style.fontFamily =
-            'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                border:
+                    `1px solid ${GLASS.border}`,
 
-        badge.style.backdropFilter =
-            'blur(16px)';
+                borderRadius:
+                    '16px',
 
-        badge.style.webkitBackdropFilter =
-            'blur(16px)';
+                backdropFilter:
+                    GLASS.blur,
 
-        badge.style.boxShadow =
-            '0 8px 24px rgba(15, 23, 42, 0.08)';
+                webkitBackdropFilter:
+                    GLASS.blur,
+
+                boxShadow:
+                    GLASS.shadow,
+
+                overflow:
+                    'hidden',
+
+                opacity:
+                    '0',
+
+                visibility:
+                    'hidden',
+
+                transform:
+                    'translateY(-8px) scale(.98)',
+
+                transition:
+                    'opacity .22s ease, transform .22s ease, visibility .22s ease'
+            }
+        );
 
 
-        // Hidden initially
+        // =====================================================
+        // GLASS HIGHLIGHT
+        // =====================================================
 
-        badge.style.opacity =
-            '0';
-
-        badge.style.visibility =
-            'hidden';
-
-        badge.style.transform =
-            'translateY(-5px)';
-
-        badge.style.transition =
-            'opacity .18s ease, ' +
-            'transform .18s ease, ' +
-            'visibility .18s ease';
+        badge.innerHTML = `
+            <div style="
+                position:absolute;
+                inset:0;
+                pointer-events:none;
+                border-radius:inherit;
+                background:
+                    linear-gradient(
+                        135deg,
+                        rgba(255,255,255,.045),
+                        transparent 42%
+                    );
+            "></div>
+        `;
 
 
         document.body.appendChild(
@@ -829,7 +866,6 @@
 
 
         if (!badge) {
-
             return;
         }
 
@@ -841,7 +877,7 @@
             '1';
 
         badge.style.transform =
-            'translateY(0)';
+            'translateY(0) scale(1)';
     }
 
 
@@ -858,7 +894,6 @@
 
 
         if (!badge) {
-
             return;
         }
 
@@ -867,7 +902,7 @@
             '0';
 
         badge.style.transform =
-            'translateY(-5px)';
+            'translateY(-8px) scale(.98)';
 
 
         setTimeout(() => {
@@ -875,7 +910,7 @@
             badge.style.visibility =
                 'hidden';
 
-        }, 180);
+        }, 220);
     }
 
 
@@ -890,7 +925,6 @@
 
 
         if (!data) {
-
             return;
         }
 
@@ -902,7 +936,6 @@
 
 
         if (!badge) {
-
             return;
         }
 
@@ -913,36 +946,51 @@
 
         const currentStatusColor =
             isInside
-                ? '#16a34a'
-                : '#6b7280';
+                ? '#65e6a4'
+                : '#8d98aa';
 
 
         const currentStatusBackground =
             isInside
-                ? 'rgba(240,253,244,0.75)'
-                : 'rgba(243,244,246,0.75)';
+                ? 'rgba(101,230,164,.08)'
+                : 'rgba(141,152,170,.07)';
 
 
         badge.innerHTML = `
 
-            <!-- =========================================
-                 HEADER
-            ========================================== -->
+            <!-- GLASS OVERLAY -->
 
             <div style="
+                position:absolute;
+                inset:0;
+                pointer-events:none;
+                border-radius:inherit;
+                background:
+                    linear-gradient(
+                        135deg,
+                        rgba(255,255,255,.045),
+                        transparent 45%
+                    );
+            "></div>
+
+
+            <!-- HEADER -->
+
+            <div style="
+                position:relative;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                margin-bottom:12px;
+                margin-bottom:11px;
             ">
 
                 <div style="
                     display:flex;
                     align-items:center;
                     gap:7px;
-                    font-size:13px;
+                    font-size:12px;
                     font-weight:700;
-                    color:#111827;
+                    color:#dce2eb;
                 ">
 
                     <div style="
@@ -950,6 +998,8 @@
                         height:7px;
                         border-radius:50%;
                         background:${data.statusColor};
+                        box-shadow:
+                            0 0 8px ${data.statusColor};
                     "></div>
 
                     Attendance
@@ -958,13 +1008,14 @@
 
 
                 <span style="
-                    font-size:9px;
+                    font-size:8px;
                     font-weight:600;
-                    color:#64748b;
-                    background:rgba(241,245,249,0.65);
-                    border:1px solid rgba(148,163,184,0.15);
+                    color:#7f8b9d;
+                    background:rgba(255,255,255,.035);
+                    border:1px solid rgba(255,255,255,.075);
                     padding:3px 6px;
-                    border-radius:5px;
+                    border-radius:6px;
+                    backdrop-filter:blur(8px);
                 ">
                     v${CURRENT_VERSION}
                 </span>
@@ -972,9 +1023,7 @@
             </div>
 
 
-            <!-- =========================================
-                 UPDATE AVAILABLE
-            ========================================== -->
+            <!-- UPDATE AVAILABLE -->
 
             ${
                 updateAvailable
@@ -983,21 +1032,23 @@
                     <button
                         id="bridgeon-update-button"
                         style="
+                            position:relative;
                             width:100%;
-                            border:1px solid rgba(59,130,246,0.22);
-                            background:rgba(239,246,255,0.65);
-                            color:#1d4ed8;
-                            border-radius:8px;
+                            border:1px solid rgba(120,169,255,.18);
+                            background:rgba(77,128,220,.075);
+                            color:#87b2ff;
+                            border-radius:11px;
                             padding:9px 10px;
-                            margin-bottom:11px;
+                            margin-bottom:10px;
                             text-align:left;
                             cursor:pointer;
                             font-family:inherit;
-                            backdrop-filter:blur(8px);
-                            -webkit-backdrop-filter:blur(8px);
+                            backdrop-filter:blur(12px);
+                            -webkit-backdrop-filter:blur(12px);
                             transition:
-                                background .15s ease,
-                                border-color .15s ease;
+                                background .2s ease,
+                                border-color .2s ease,
+                                transform .2s ease;
                         "
                     >
 
@@ -1011,18 +1062,19 @@
                             <div>
 
                                 <div style="
-                                    font-size:10px;
+                                    font-size:9px;
                                     font-weight:700;
                                     margin-bottom:2px;
+                                    color:#8db6ff;
                                 ">
-                                    🆕 Update available
+                                    New update available
                                 </div>
 
                                 <div style="
-                                    font-size:9px;
-                                    color:#3b82f6;
+                                    font-size:8px;
+                                    color:#718fbd;
                                 ">
-                                    New version v${latestVersion}
+                                    Version ${latestVersion}
                                 </div>
 
                             </div>
@@ -1030,7 +1082,9 @@
 
                             <span style="
                                 font-size:14px;
-                                font-weight:700;
+                                font-weight:600;
+                                color:#82acff;
+                                opacity:.8;
                             ">
                                 →
                             </span>
@@ -1044,26 +1098,25 @@
             }
 
 
-            <!-- =========================================
-                 STATUS
-            ========================================== -->
+            <!-- STATUS -->
 
             <div style="
+                position:relative;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                margin-bottom:12px;
+                margin-bottom:10px;
             ">
 
                 <span style="
-                    font-size:11px;
-                    color:#64748b;
+                    font-size:9px;
+                    color:${GLASS.textMuted};
                 ">
                     Today's status
                 </span>
 
                 <span style="
-                    font-size:11px;
+                    font-size:10px;
                     font-weight:700;
                     color:${data.statusColor};
                 ">
@@ -1073,52 +1126,52 @@
             </div>
 
 
-            <!-- =========================================
-                 LAST ACTION
-            ========================================== -->
+            <!-- LAST ACTION -->
 
             <div style="
-                font-size:10px;
-                color:#94a3b8;
-                margin-bottom:10px;
+                position:relative;
+                font-size:8px;
+                color:${GLASS.textDim};
+                margin-bottom:9px;
             ">
-                Last action: ${data.lastAction}
+                Last action · ${data.lastAction}
             </div>
 
 
-            <!-- =========================================
-                 STATS
-            ========================================== -->
+            <!-- STATS -->
 
             <div style="
+                position:relative;
                 display:grid;
                 grid-template-columns:1fr 1fr;
-                gap:7px;
-                margin-bottom:11px;
+                gap:6px;
+                margin-bottom:10px;
             ">
 
 
                 <!-- OFFICE -->
 
                 <div style="
-                    background:rgba(248,250,252,0.55);
-                    border:1px solid rgba(148,163,184,0.12);
-                    border-radius:9px;
+                    background:${GLASS.card};
+                    border:1px solid rgba(255,255,255,.065);
+                    border-radius:10px;
                     padding:9px;
+                    backdrop-filter:blur(10px);
+                    -webkit-backdrop-filter:blur(10px);
                 ">
 
                     <div style="
-                        font-size:10px;
-                        color:#64748b;
+                        font-size:8px;
+                        color:${GLASS.textMuted};
                         margin-bottom:4px;
                     ">
                         Office
                     </div>
 
                     <div style="
-                        font-size:13px;
+                        font-size:12px;
                         font-weight:700;
-                        color:#111827;
+                        color:#cdd5e0;
                     ">
                         ${formatMinutes(
                             data.officeMinutes
@@ -1131,22 +1184,24 @@
                 <!-- OUTSIDE -->
 
                 <div style="
-                    background:rgba(248,250,252,0.55);
-                    border:1px solid rgba(148,163,184,0.12);
-                    border-radius:9px;
+                    background:${GLASS.card};
+                    border:1px solid rgba(255,255,255,.065);
+                    border-radius:10px;
                     padding:9px;
+                    backdrop-filter:blur(10px);
+                    -webkit-backdrop-filter:blur(10px);
                 ">
 
                     <div style="
-                        font-size:10px;
-                        color:#64748b;
+                        font-size:8px;
+                        color:${GLASS.textMuted};
                         margin-bottom:4px;
                     ">
                         Outside
                     </div>
 
                     <div style="
-                        font-size:13px;
+                        font-size:12px;
                         font-weight:700;
                         color:${data.outsideColor};
                     ">
@@ -1160,11 +1215,10 @@
             </div>
 
 
-            <!-- =========================================
-                 OUTSIDE LIMIT
-            ========================================== -->
+            <!-- OUTSIDE LIMIT -->
 
             <div style="
+                position:relative;
                 display:flex;
                 justify-content:space-between;
                 align-items:center;
@@ -1172,16 +1226,16 @@
             ">
 
                 <span style="
-                    font-size:10px;
-                    color:#64748b;
+                    font-size:8px;
+                    color:${GLASS.textMuted};
                 ">
                     Outside limit
                 </span>
 
                 <span style="
-                    font-size:10px;
+                    font-size:8px;
                     font-weight:600;
-                    color:#374151;
+                    color:#9aa5b5;
                 ">
                     ${formatMinutes(
                         data.remainingOutside
@@ -1191,17 +1245,16 @@
             </div>
 
 
-            <!-- =========================================
-                 PROGRESS
-            ========================================== -->
+            <!-- PROGRESS -->
 
             <div style="
+                position:relative;
                 width:100%;
-                height:5px;
-                background:rgba(226,232,240,0.7);
+                height:4px;
+                background:rgba(255,255,255,.055);
                 border-radius:20px;
                 overflow:hidden;
-                margin-bottom:12px;
+                margin-bottom:11px;
             ">
 
                 <div style="
@@ -1210,38 +1263,41 @@
                     background:${data.outsideColor};
                     border-radius:20px;
                     transition:width .3s ease;
+                    box-shadow:
+                        0 0 8px ${data.outsideColor};
                 "></div>
 
             </div>
 
 
-            <!-- =========================================
-                 CURRENT STATUS
-            ========================================== -->
+            <!-- CURRENT STATUS -->
 
             <div style="
+                position:relative;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                padding-top:10px;
-                border-top:1px solid rgba(148,163,184,0.16);
+                padding-top:9px;
+                border-top:1px solid rgba(255,255,255,.065);
             ">
 
                 <span style="
-                    font-size:10px;
-                    color:#64748b;
+                    font-size:8px;
+                    color:${GLASS.textMuted};
                 ">
                     Current status
                 </span>
 
 
                 <span style="
-                    font-size:10px;
+                    font-size:8px;
                     font-weight:700;
                     color:${currentStatusColor};
                     background:${currentStatusBackground};
+                    border:1px solid rgba(255,255,255,.045);
                     padding:4px 7px;
                     border-radius:6px;
+                    backdrop-filter:blur(8px);
                 ">
                     ${data.currentStatus}
                 </span>
@@ -1265,7 +1321,6 @@
 
             updateButton.onclick =
                 function () {
-
                     installUpdate();
                 };
 
@@ -1274,10 +1329,13 @@
                 function () {
 
                     this.style.background =
-                        'rgba(219,234,254,0.8)';
+                        'rgba(77,128,220,.13)';
 
                     this.style.borderColor =
-                        'rgba(59,130,246,0.35)';
+                        'rgba(120,169,255,.28)';
+
+                    this.style.transform =
+                        'translateY(-1px)';
                 };
 
 
@@ -1285,10 +1343,13 @@
                 function () {
 
                     this.style.background =
-                        'rgba(239,246,255,0.65)';
+                        'rgba(77,128,220,.075)';
 
                     this.style.borderColor =
-                        'rgba(59,130,246,0.22)';
+                        'rgba(120,169,255,.18)';
+
+                    this.style.transform =
+                        'translateY(0)';
                 };
         }
     }
@@ -1307,13 +1368,10 @@
 
 
         if (expandedIcon) {
-
             showBadge();
-
         }
 
         else {
-
             hideBadge();
         }
     }
@@ -1325,8 +1383,6 @@
 
     createBadge();
 
-
-    // Initial badge update
     updateBadge();
 
 
