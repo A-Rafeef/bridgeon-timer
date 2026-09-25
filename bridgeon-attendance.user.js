@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.3
+// @version      1.1.4
 // @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -31,7 +31,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.3';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.4';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -241,10 +241,60 @@
 
     const LOG_REGEX = /^(in|out)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm))$/i;
 
+    // Returns the currently expanded accordion section element (active date panel),
+    // or falls back to the full document if none can be identified.
+    function getActiveSection() {
+        // The expanded accordion icon lives inside the accordion summary.
+        // Walk up from it to find the MuiAccordion root, then read its details panel.
+        const expandIcon = document.querySelector('[data-testid="ExpandLessIcon"]');
+        if (expandIcon) {
+            // Go up until we hit the Accordion root (has MuiAccordion-root class)
+            let node = expandIcon.parentElement;
+            while (node && node !== document.body) {
+                if (
+                    node.classList.contains('MuiAccordion-root') ||
+                    node.classList.contains('MuiPaper-root')
+                ) {
+                    return node;
+                }
+                node = node.parentElement;
+            }
+        }
+        // Fallback: return document so caller can still attempt a search
+        return document;
+    }
+
+    // Returns the date label text for the currently active accordion section.
+    function getActiveDateLabel() {
+        const section = getActiveSection();
+        if (!section || section === document) return null;
+
+        // Try to find a date heading inside the accordion summary
+        // Bridgeon typically shows the date as plain text inside the summary bar
+        const summaryEl = section.querySelector('.MuiAccordionSummary-content');
+        if (summaryEl) {
+            // Find first non-empty text node or span that is NOT an icon
+            const candidates = summaryEl.querySelectorAll('p, span, div');
+            for (const el of candidates) {
+                const txt = (el.innerText || el.textContent || '').trim();
+                // A date string will contain a digit and be reasonably short
+                if (txt && txt.length < 40 && /\d/.test(txt) && el.children.length === 0) {
+                    return txt;
+                }
+            }
+            // Last resort: whole summary text
+            const raw = (summaryEl.innerText || summaryEl.textContent || '').trim();
+            if (raw) return raw.split('\n')[0].trim();
+        }
+        return null;
+    }
+
     function getAttendanceLogs() {
         if (!isAttendancePage()) return [];
 
-        const chips = document.querySelectorAll('.MuiChip-label');
+        // Only read chips inside the CURRENTLY ACTIVE (expanded) date section
+        const scope = getActiveSection();
+        const chips = scope.querySelectorAll('.MuiChip-label');
         const logs = [];
 
         chips.forEach(el => {
@@ -359,6 +409,9 @@
         const remainingOutside = Math.max(0, MAX_OUTSIDE - outsideMinutes);
         const usagePercent = Math.min(100, (outsideMinutes / MAX_OUTSIDE) * 100);
 
+        // Detect if we're viewing today or a past date
+        const activeDate = getActiveDateLabel();
+
         let outsideColor;
         if (outsideMinutes < 60) {
             outsideColor = '#30D158'; // Liquid Emerald Green
@@ -377,7 +430,8 @@
             currentStatus,
             lastAction,
             usagePercent,
-            outsideColor
+            outsideColor,
+            activeDate
         };
     }
 
@@ -692,6 +746,27 @@
                     </div>
                 </button>
 
+                <!-- DATE LABEL ROW -->
+                <div style="
+                    position:relative;
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    margin-bottom:8px;
+                ">
+                    <span style="font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:rgba(235, 235, 245, 0.38);">Date</span>
+                    <span id="bridgeon-date-label" style="
+                        font-size:9px;
+                        font-weight:600;
+                        color:rgba(235, 235, 245, 0.72);
+                        background: rgba(255,255,255,0.055);
+                        border: 1px solid rgba(255,255,255,0.1);
+                        padding: 2px 8px;
+                        border-radius: 999px;
+                        font-variant-numeric: tabular-nums;
+                    ">--</span>
+                </div>
+
                 <!-- STATUS ROW -->
                 <div style="
                     position:relative;
@@ -700,7 +775,7 @@
                     justify-content:space-between;
                     margin-bottom:10px;
                 ">
-                    <span style="font-size:9.5px; font-weight:500; color:rgba(235, 235, 245, 0.55);">Today's status</span>
+                    <span id="bridgeon-status-label" style="font-size:9.5px; font-weight:500; color:rgba(235, 235, 245, 0.55);">Status</span>
                     <span id="bridgeon-status-val" style="
                         font-size:10.5px;
                         font-weight:700;
@@ -952,6 +1027,8 @@
         const outsideLeftVal = document.getElementById('bridgeon-outside-left-val');
         const progressBar = document.getElementById('bridgeon-progress-bar');
         const currentStatusVal = document.getElementById('bridgeon-current-status-val');
+        const dateLabelEl = document.getElementById('bridgeon-date-label');
+        const statusLabelEl = document.getElementById('bridgeon-status-label');
 
         // Beacon updates — pulse ring only animates when user is currently IN
         const pulseAnimation = isInside ? '' : 'none';
@@ -973,6 +1050,14 @@
         }
         if (islandLabel) {
             islandLabel.textContent = `${data.currentStatus} · ${formatMinutes(isInside ? data.officeMinutes : data.outsideMinutes)}`;
+        }
+
+        // Date label — shows the active accordion date (e.g. "25 Sep 2026")
+        if (dateLabelEl) {
+            dateLabelEl.textContent = data.activeDate || 'Today';
+        }
+        if (statusLabelEl) {
+            statusLabelEl.textContent = data.activeDate ? 'Status' : "Today's status";
         }
 
         // Full view updates
