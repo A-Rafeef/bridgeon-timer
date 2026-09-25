@@ -1,4 +1,4 @@
-```javascript
+
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
@@ -1112,4 +1112,4 @@
     }, 1000);
 
 })();
-```
+
