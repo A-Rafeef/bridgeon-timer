@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.1
-// @description  Bridgeon attendance visualization tool with iOS-inspired frosted glassmorphism
+// @version      1.1.2
+// @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
 // @downloadURL  https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -29,7 +29,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.1';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.2';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -347,10 +347,10 @@
 
         if (firstIn <= OFFICE_START) {
             statusText = 'On Time';
-            statusColor = '#30D158'; // iOS Vibrant Green
+            statusColor = '#30D158'; // iOS Liquid Emerald
         } else {
             statusText = `Late ${firstIn - OFFICE_START}m`;
-            statusColor = '#FF453A'; // iOS Coral Red
+            statusColor = '#FF453A'; // iOS Liquid Coral
         }
 
         const lastAction = `${lastLog.type} · ${lastLog.time}`;
@@ -359,11 +359,11 @@
 
         let outsideColor;
         if (outsideMinutes < 60) {
-            outsideColor = '#30D158'; // iOS Green
+            outsideColor = '#30D158'; // Liquid Emerald Green
         } else if (outsideMinutes < 90) {
-            outsideColor = '#FF9F0A'; // iOS Amber/Orange
+            outsideColor = '#FF9F0A'; // Liquid Amber
         } else {
-            outsideColor = '#FF453A'; // iOS Red
+            outsideColor = '#FF453A'; // Liquid Coral Red
         }
 
         return {
@@ -380,49 +380,70 @@
     }
 
     // =========================================================
-    // INJECT STYLES (iOS GLASSMORPHISM & DYNAMIC ISLAND)
+    // INJECT STYLES (LIQUID GLASS TRANSLUCENT MATERIAL)
     // =========================================================
 
     function injectStyles() {
-        if (document.getElementById('bridgeon-ios-styles')) {
+        if (document.getElementById('bridgeon-liquid-styles')) {
             return;
         }
 
         const style = document.createElement('style');
-        style.id = 'bridgeon-ios-styles';
+        style.id = 'bridgeon-liquid-styles';
         style.textContent = `
             #bridgeon-badge {
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                width: 236px;
+                width: 242px;
                 box-sizing: border-box;
-                padding: 14px 14px 12px 14px;
+                padding: 15px 14px 13px 14px;
                 z-index: 999999;
                 color: #F5F5F7;
                 font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-                background: rgba(18, 21, 28, 0.74);
-                border: 1px solid rgba(255, 255, 255, 0.16);
-                border-radius: 22px;
-                backdrop-filter: blur(30px) saturate(190%) contrast(105%);
-                -webkit-backdrop-filter: blur(30px) saturate(190%) contrast(105%);
+                
+                /* LIQUID GLASS TRANSLUCENT INTERFACE MATERIAL */
+                background:
+                    radial-gradient(130% 120% at 20% 0%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.03) 45%, transparent 75%),
+                    radial-gradient(90% 90% at 85% 100%, rgba(77, 128, 220, 0.14) 0%, transparent 60%),
+                    linear-gradient(145deg, rgba(22, 26, 38, 0.72) 0%, rgba(12, 15, 23, 0.82) 100%);
+                
+                border: 1px solid rgba(255, 255, 255, 0.22);
+                border-radius: 24px;
+                backdrop-filter: blur(36px) saturate(210%) brightness(108%) contrast(106%);
+                -webkit-backdrop-filter: blur(36px) saturate(210%) brightness(108%) contrast(106%);
+                
+                /* LIQUID GLASS SPECULAR REFRACTION */
                 box-shadow:
-                    0 22px 50px -10px rgba(0, 0, 0, 0.65),
-                    0 6px 18px -2px rgba(0, 0, 0, 0.4),
-                    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
-                    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35);
+                    0 24px 54px -10px rgba(0, 0, 0, 0.72),
+                    0 8px 24px -4px rgba(0, 0, 0, 0.45),
+                    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.42),
+                    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.4),
+                    inset 1px 0 2px 0 rgba(255, 255, 255, 0.16),
+                    inset -1px 0 2px 0 rgba(255, 255, 255, 0.08);
+                
                 overflow: hidden;
                 user-select: none;
                 opacity: 0;
                 visibility: hidden;
                 transform: translateY(-8px) scale(0.97);
                 transition:
-                    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                    visibility 0.28s ease,
-                    width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                    padding 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                    border-radius 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+                    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0.3s ease,
+                    width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.3s ease;
+            }
+
+            #bridgeon-badge:hover {
+                box-shadow:
+                    0 28px 64px -10px rgba(0, 0, 0, 0.78),
+                    0 12px 28px -4px rgba(0, 0, 0, 0.5),
+                    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.52),
+                    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.45),
+                    inset 1px 0 2px 0 rgba(255, 255, 255, 0.22);
             }
 
             #bridgeon-badge.bridgeon-visible {
@@ -431,17 +452,20 @@
                 transform: translateY(0) scale(1) !important;
             }
 
-            /* DYNAMIC ISLAND MINIMIZED STATE */
+            /* LIQUID GLASS DYNAMIC ISLAND (MINIMIZED STATE) */
             #bridgeon-badge.bridgeon-minimized {
                 width: auto !important;
-                min-width: 146px;
-                padding: 7px 13px !important;
+                min-width: 152px;
+                padding: 7px 14px !important;
                 border-radius: 999px !important;
                 cursor: pointer;
-                background: rgba(14, 16, 22, 0.85);
+                background:
+                    radial-gradient(110% 110% at 20% 0%, rgba(255, 255, 255, 0.24) 0%, transparent 60%),
+                    linear-gradient(145deg, rgba(16, 20, 28, 0.86) 0%, rgba(10, 13, 19, 0.94) 100%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.26) !important;
                 box-shadow:
-                    0 14px 34px -4px rgba(0, 0, 0, 0.75),
-                    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
+                    0 18px 40px -4px rgba(0, 0, 0, 0.8),
+                    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.45) !important;
             }
 
             #bridgeon-badge.bridgeon-minimized #bridgeon-full-view {
@@ -462,7 +486,7 @@
             }
 
             @keyframes bridgeon-pulse {
-                0%, 100% { transform: scale(1); opacity: 0.8; }
+                0%, 100% { transform: scale(1); opacity: 0.85; }
                 50% { transform: scale(1.6); opacity: 0; }
             }
 
@@ -474,20 +498,22 @@
                 border: none;
                 outline: none;
                 cursor: pointer;
-                background: rgba(255, 255, 255, 0.06);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: rgba(235, 235, 245, 0.7);
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                color: rgba(235, 235, 245, 0.75);
                 border-radius: 999px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2);
                 transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             }
 
             .bridgeon-btn-action:hover {
-                background: rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.16);
+                border-color: rgba(255, 255, 255, 0.25);
                 color: #FFFFFF;
-                transform: scale(1.05);
+                transform: scale(1.06);
             }
 
             .bridgeon-btn-action:active {
@@ -495,8 +521,8 @@
             }
 
             #bridgeon-update-button:hover {
-                background: rgba(10, 132, 255, 0.18) !important;
-                border-color: rgba(10, 132, 255, 0.38) !important;
+                background: rgba(10, 132, 255, 0.2) !important;
+                border-color: rgba(10, 132, 255, 0.42) !important;
                 transform: translateY(-1px);
             }
         `;
@@ -518,16 +544,28 @@
         badge.id = 'bridgeon-badge';
 
         badge.innerHTML = `
-            <!-- SPECULAR TOP SHINE (APPLE GLASS REFLECTION) -->
+            <!-- LIQUID GLASS SURFACE CAUSTIC SHEEN -->
             <div style="
                 position:absolute;
-                top:0;
-                left:0;
-                right:0;
-                height:45%;
+                inset:0;
                 pointer-events:none;
                 border-radius:inherit;
-                background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+                background:
+                    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.2) 0%, transparent 35%),
+                    linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.01) 40%, transparent 60%);
+            "></div>
+
+            <!-- LIQUID AMBIENT BACKLIGHT GLOW -->
+            <div style="
+                position:absolute;
+                bottom:-30px;
+                right:-30px;
+                width:130px;
+                height:130px;
+                border-radius:50%;
+                pointer-events:none;
+                background: radial-gradient(circle, rgba(90, 160, 255, 0.16) 0%, transparent 70%);
+                filter: blur(28px);
             "></div>
 
             <!-- DYNAMIC ISLAND (MINIMIZED VIEW) -->
@@ -545,11 +583,11 @@
                         height:8px;
                         border-radius:50%;
                         background:#30D158;
-                        box-shadow:0 0 10px #30D158;
+                        box-shadow:0 0 12px #30D158;
                     "></div>
                 </div>
                 <span id="bridgeon-island-label" style="color:#F5F5F7;">Attendance</span>
-                <span style="font-size:10px; color:rgba(235, 235, 245, 0.45); margin-left:auto;">↗</span>
+                <span style="font-size:10px; color:rgba(235, 235, 245, 0.5); margin-left:auto;">↗</span>
             </div>
 
             <!-- FULL WIDGET VIEW -->
@@ -563,7 +601,7 @@
                     justify-content:space-between;
                     margin-bottom:11px;
                 ">
-                    <!-- LOGO & PULSE DOT -->
+                    <!-- LOGO & PULSE BEACON -->
                     <div style="
                         display:flex;
                         align-items:center;
@@ -586,29 +624,30 @@
                                 height:8px;
                                 border-radius:50%;
                                 background:#30D158;
-                                box-shadow:0 0 10px #30D158;
+                                box-shadow:0 0 12px #30D158;
                             "></div>
                         </div>
                         Attendance
                     </div>
 
-                    <!-- ACTIONS: VERSION PILL & MINIMIZE BUTTON -->
+                    <!-- ACTIONS: LIQUID PILL & MINIMIZE BUTTON -->
                     <div style="display:flex; align-items:center; gap:5px;">
                         <span style="
                             font-size:8.5px;
                             font-weight:600;
-                            color:rgba(235, 235, 245, 0.55);
-                            background:rgba(255, 255, 255, 0.05);
-                            border:1px solid rgba(255, 255, 255, 0.1);
-                            padding:2px 7px;
-                            border-radius:999px;
+                            color:rgba(235, 235, 245, 0.65);
+                            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+                            border: 1px solid rgba(255, 255, 255, 0.14);
+                            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.18);
+                            padding: 2px 7px;
+                            border-radius: 999px;
                         ">
                             v${CURRENT_VERSION}
                         </span>
 
                         <button id="bridgeon-minimize-btn" class="bridgeon-btn-action" title="Minimize to Island" style="
-                            width:18px;
-                            height:18px;
+                            width:19px;
+                            height:19px;
                             font-size:10px;
                             line-height:1;
                         ">
@@ -617,24 +656,25 @@
                     </div>
                 </div>
 
-                <!-- UPDATE BANNER (APPLE NOTIFICATION STYLE) -->
+                <!-- UPDATE BANNER (LIQUID NOTIFICATION STYLE) -->
                 <button
                     id="bridgeon-update-button"
                     style="
                         display:none;
                         position:relative;
                         width:100%;
-                        border:1px solid rgba(10, 132, 255, 0.28);
-                        background:rgba(10, 132, 255, 0.12);
+                        border:1px solid rgba(10, 132, 255, 0.32);
+                        background: linear-gradient(135deg, rgba(10, 132, 255, 0.18) 0%, rgba(10, 132, 255, 0.08) 100%);
                         color:#0A84FF;
-                        border-radius:14px;
+                        border-radius:15px;
                         padding:8px 10px;
                         margin-bottom:10px;
                         text-align:left;
                         cursor:pointer;
                         font-family:inherit;
-                        backdrop-filter:blur(14px);
-                        -webkit-backdrop-filter:blur(14px);
+                        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(10, 132, 255, 0.15);
+                        backdrop-filter:blur(16px);
+                        -webkit-backdrop-filter:blur(16px);
                         transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
                     "
                 >
@@ -643,7 +683,7 @@
                             <div style="font-size:9.5px; font-weight:700; color:#5AC8FA; margin-bottom:1px;">
                                 Update Available
                             </div>
-                            <div id="bridgeon-update-version-label" style="font-size:8.5px; color:rgba(90, 200, 250, 0.8);">
+                            <div id="bridgeon-update-version-label" style="font-size:8.5px; color:rgba(90, 200, 250, 0.85);">
                                 Version ...
                             </div>
                         </div>
@@ -670,7 +710,7 @@
                     </span>
                 </div>
 
-                <!-- HERO STAT TILES (iOS WIDGET STYLE) -->
+                <!-- HERO STAT TILES (LIQUID TRANSLUCENT CARDS) -->
                 <div style="
                     position:relative;
                     display:grid;
@@ -680,15 +720,18 @@
                 ">
                     <!-- OFFICE TILE -->
                     <div style="
-                        background:rgba(255, 255, 255, 0.045);
-                        border:1px solid rgba(255, 255, 255, 0.08);
-                        border-radius:14px;
-                        padding:10px 10px 9px 10px;
-                        box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.06);
+                        position:relative;
+                        background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+                        border: 1px solid rgba(255, 255, 255, 0.12);
+                        border-radius: 16px;
+                        padding: 10px 10px 9px 10px;
+                        box-shadow:
+                            inset 0 1px 1px rgba(255, 255, 255, 0.16),
+                            0 4px 14px rgba(0, 0, 0, 0.18);
                     ">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
                             <span style="font-size:9.5px; font-weight:500; color:rgba(235, 235, 245, 0.55);">Office</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(235, 235, 245, 0.4)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(235, 235, 245, 0.45)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
@@ -705,15 +748,18 @@
 
                     <!-- OUTSIDE TILE -->
                     <div style="
-                        background:rgba(255, 255, 255, 0.045);
-                        border:1px solid rgba(255, 255, 255, 0.08);
-                        border-radius:14px;
-                        padding:10px 10px 9px 10px;
-                        box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.06);
+                        position:relative;
+                        background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+                        border: 1px solid rgba(255, 255, 255, 0.12);
+                        border-radius: 16px;
+                        padding: 10px 10px 9px 10px;
+                        box-shadow:
+                            inset 0 1px 1px rgba(255, 255, 255, 0.16),
+                            0 4px 14px rgba(0, 0, 0, 0.18);
                     ">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
                             <span style="font-size:9.5px; font-weight:500; color:rgba(235, 235, 245, 0.55);">Outside</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(235, 235, 245, 0.4)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(235, 235, 245, 0.45)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
                                 <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
                                 <line x1="6" y1="1" x2="6" y2="4"></line>
@@ -746,39 +792,42 @@
                     </span>
                 </div>
 
+                <!-- LIQUID PROGRESS TRACK -->
                 <div style="
                     position:relative;
                     width:100%;
-                    height:5px;
-                    background:rgba(255, 255, 255, 0.08);
+                    height:6px;
+                    background:rgba(255, 255, 255, 0.07);
+                    border:1px solid rgba(255, 255, 255, 0.08);
                     border-radius:99px;
                     overflow:hidden;
                     margin-bottom:12px;
+                    box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.3);
                 ">
                     <div id="bridgeon-progress-bar" style="
                         width:0%;
                         height:100%;
-                        background:#30D158;
+                        background: linear-gradient(90deg, #30D158, #34C759);
                         border-radius:99px;
-                        transition:width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
-                        box-shadow:0 0 8px rgba(48, 209, 88, 0.4);
+                        transition:width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+                        box-shadow:0 0 10px rgba(48, 209, 88, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
                     "></div>
                 </div>
 
-                <!-- BOTTOM LIVE ACTIVITY / STATUS CAPSULE -->
+                <!-- BOTTOM LIVE ACTIVITY / LIQUID CAPSULE -->
                 <div style="
                     position:relative;
                     display:flex;
                     align-items:center;
                     justify-content:space-between;
                     padding-top:10px;
-                    border-top:1px solid rgba(255, 255, 255, 0.07);
+                    border-top:1px solid rgba(255, 255, 255, 0.08);
                 ">
                     <div style="display:flex; flex-direction:column; gap:2px;">
-                        <span style="font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:rgba(235, 235, 245, 0.4);">
+                        <span style="font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:rgba(235, 235, 245, 0.42);">
                             Activity
                         </span>
-                        <span id="bridgeon-last-action" style="font-size:9px; font-weight:500; color:rgba(235, 235, 245, 0.75);">
+                        <span id="bridgeon-last-action" style="font-size:9px; font-weight:500; color:rgba(235, 235, 245, 0.78);">
                             --
                         </span>
                     </div>
@@ -786,14 +835,14 @@
                     <span id="bridgeon-current-status-val" style="
                         font-size:9px;
                         font-weight:700;
-                        letter-spacing:0.03em;
+                        letter-spacing:0.04em;
                         text-transform:uppercase;
                         color:#30D158;
-                        background:rgba(48, 209, 88, 0.12);
-                        border:1px solid rgba(48, 209, 88, 0.28);
-                        padding:4px 9px;
+                        background: linear-gradient(145deg, rgba(48, 209, 88, 0.18) 0%, rgba(48, 209, 88, 0.08) 100%);
+                        border:1px solid rgba(48, 209, 88, 0.32);
+                        padding:4px 10px;
                         border-radius:999px;
-                        box-shadow:0 0 12px rgba(48, 209, 88, 0.15);
+                        box-shadow:0 0 14px rgba(48, 209, 88, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
                     ">
                         --
                     </span>
@@ -880,9 +929,13 @@
 
         const isInside = data.currentStatus === 'IN';
         const currentStatusColor = isInside ? '#30D158' : '#8E8E93';
-        const currentStatusBackground = isInside ? 'rgba(48, 209, 88, 0.12)' : 'rgba(142, 142, 147, 0.1)';
-        const currentStatusBorder = isInside ? 'rgba(48, 209, 88, 0.28)' : 'rgba(142, 142, 147, 0.2)';
-        const currentStatusShadow = isInside ? '0 0 12px rgba(48, 209, 88, 0.15)' : 'none';
+        const currentStatusBackground = isInside
+            ? 'linear-gradient(145deg, rgba(48, 209, 88, 0.18) 0%, rgba(48, 209, 88, 0.08) 100%)'
+            : 'linear-gradient(145deg, rgba(142, 142, 147, 0.15) 0%, rgba(142, 142, 147, 0.06) 100%)';
+        const currentStatusBorder = isInside ? 'rgba(48, 209, 88, 0.32)' : 'rgba(142, 142, 147, 0.22)';
+        const currentStatusShadow = isInside
+            ? '0 0 14px rgba(48, 209, 88, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2)'
+            : 'inset 0 1px 1px rgba(255, 255, 255, 0.1)';
 
         // Elements
         const beaconRing = document.getElementById('bridgeon-beacon-ring');
@@ -903,12 +956,12 @@
         if (beaconRing) beaconRing.style.background = currentStatusColor;
         if (statusDot) {
             statusDot.style.background = currentStatusColor;
-            statusDot.style.boxShadow = `0 0 10px ${currentStatusColor}`;
+            statusDot.style.boxShadow = `0 0 12px ${currentStatusColor}`;
         }
         if (islandPulse) islandPulse.style.background = currentStatusColor;
         if (islandDot) {
             islandDot.style.background = currentStatusColor;
-            islandDot.style.boxShadow = `0 0 10px ${currentStatusColor}`;
+            islandDot.style.boxShadow = `0 0 12px ${currentStatusColor}`;
         }
         if (islandLabel) {
             islandLabel.textContent = `${data.currentStatus} · ${formatMinutes(isInside ? data.officeMinutes : data.outsideMinutes)}`;
@@ -935,7 +988,7 @@
         if (progressBar) {
             progressBar.style.width = `${data.usagePercent}%`;
             progressBar.style.background = data.outsideColor;
-            progressBar.style.boxShadow = `0 0 8px ${data.outsideColor}66`;
+            progressBar.style.boxShadow = `0 0 10px ${data.outsideColor}88, inset 0 1px 1px rgba(255, 255, 255, 0.3)`;
         }
         if (currentStatusVal) {
             currentStatusVal.textContent = data.currentStatus;
