@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.7
+// @version      1.1.8
 // @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -31,7 +31,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.7';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.8';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -658,8 +658,30 @@
                         Attendance
                     </div>
 
-                    <!-- ACTIONS: LIGHT PILL & MINIMIZE BUTTON -->
+                    <!-- ACTIONS: FEEDBACK, VERSION PILL & MINIMIZE BUTTON -->
                     <div style="display:flex; align-items:center; gap:5px;">
+                        <a
+                            id="bridgeon-feedback-btn"
+                            href="https://github.com/A-Rafeef/bridgeon-timer/discussions"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="bridgeon-btn-action"
+                            title="Share Suggestions & Ideas on GitHub Discussions"
+                            onclick="event.stopPropagation();"
+                            style="
+                                width:19px;
+                                height:19px;
+                                text-decoration:none;
+                                display:inline-flex;
+                                align-items:center;
+                                justify-content:center;
+                            "
+                        >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </a>
+
                         <span style="
                             font-size:8.5px;
                             font-weight:600;
