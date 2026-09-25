@@ -1,8 +1,7 @@
-
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.0.6
+// @version      1.0.7
 // @description  Bridgeon attendance visualization tool
 // @match        https://student.bridgeon.in/attendance
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -22,7 +21,7 @@
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
-    const CURRENT_VERSION = '1.0.6';
+    const CURRENT_VERSION = '1.0.7';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -30,11 +29,7 @@
     const SCRIPT_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js';
 
-
-    // Latest version detected from GitHub
     let latestVersion = null;
-
-    // Whether an update is available
     let updateAvailable = false;
 
 
@@ -109,7 +104,6 @@
                         response.status
                     );
 
-
                     if (showMessage) {
 
                         alert(
@@ -130,7 +124,6 @@
                             response.responseText
                         );
 
-
                     const version =
                         String(
                             data.version || ''
@@ -142,7 +135,6 @@
                         console.error(
                             '[Bridgeon] Invalid version.json'
                         );
-
 
                         if (showMessage) {
 
@@ -175,14 +167,12 @@
                         updateAvailable = true;
 
 
-                        // Tampermonkey menu
                         GM_registerMenuCommand(
                             `🆕 Update available: v${latestVersion}`,
                             installUpdate
                         );
 
 
-                        // Refresh badge immediately
                         updateBadge();
 
 
@@ -236,7 +226,6 @@
                         error
                     );
 
-
                     if (showMessage) {
 
                         alert(
@@ -257,7 +246,6 @@
                     '[Bridgeon] Update check failed:',
                     error
                 );
-
 
                 if (showMessage) {
 
@@ -317,7 +305,6 @@
                 .trim()
                 .split(' ');
 
-
         let [hours, minutes] =
             time
                 .split(':')
@@ -359,7 +346,6 @@
             Math.floor(
                 minutes / 60
             );
-
 
         const m =
             minutes % 60;
@@ -758,7 +744,7 @@
 
 
         // =====================================================
-        // MINIMAL LIGHT DESIGN
+        // MINIMAL GLASSMORPHISM DESIGN
         // =====================================================
 
         badge.style.position =
@@ -777,13 +763,13 @@
             'border-box';
 
         badge.style.background =
-            '#ffffff';
+            'rgba(255, 255, 255, 0.72)';
 
         badge.style.border =
-            '1px solid #e5e7eb';
+            '1px solid rgba(255, 255, 255, 0.75)';
 
         badge.style.borderRadius =
-            '12px';
+            '14px';
 
         badge.style.padding =
             '14px';
@@ -797,8 +783,14 @@
         badge.style.fontFamily =
             'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
+        badge.style.backdropFilter =
+            'blur(16px)';
+
+        badge.style.webkitBackdropFilter =
+            'blur(16px)';
+
         badge.style.boxShadow =
-            '0 4px 14px rgba(15, 23, 42, 0.08)';
+            '0 8px 24px rgba(15, 23, 42, 0.08)';
 
 
         // Hidden initially
@@ -810,12 +802,12 @@
             'hidden';
 
         badge.style.transform =
-            'translateY(-8px)';
+            'translateY(-5px)';
 
         badge.style.transition =
-            'opacity .2s ease, ' +
-            'transform .2s ease, ' +
-            'visibility .2s ease';
+            'opacity .18s ease, ' +
+            'transform .18s ease, ' +
+            'visibility .18s ease';
 
 
         document.body.appendChild(
@@ -875,7 +867,7 @@
             '0';
 
         badge.style.transform =
-            'translateY(-8px)';
+            'translateY(-5px)';
 
 
         setTimeout(() => {
@@ -883,7 +875,7 @@
             badge.style.visibility =
                 'hidden';
 
-        }, 200);
+        }, 180);
     }
 
 
@@ -927,8 +919,8 @@
 
         const currentStatusBackground =
             isInside
-                ? '#f0fdf4'
-                : '#f3f4f6';
+                ? 'rgba(240,253,244,0.75)'
+                : 'rgba(243,244,246,0.75)';
 
 
         badge.innerHTML = `
@@ -954,8 +946,8 @@
                 ">
 
                     <div style="
-                        width:8px;
-                        height:8px;
+                        width:7px;
+                        height:7px;
                         border-radius:50%;
                         background:${data.statusColor};
                     "></div>
@@ -968,9 +960,9 @@
                 <span style="
                     font-size:9px;
                     font-weight:600;
-                    color:#6b7280;
-                    background:#f3f4f6;
-                    border:1px solid #e5e7eb;
+                    color:#64748b;
+                    background:rgba(241,245,249,0.65);
+                    border:1px solid rgba(148,163,184,0.15);
                     padding:3px 6px;
                     border-radius:5px;
                 ">
@@ -992,8 +984,8 @@
                         id="bridgeon-update-button"
                         style="
                             width:100%;
-                            border:1px solid #bfdbfe;
-                            background:#eff6ff;
+                            border:1px solid rgba(59,130,246,0.22);
+                            background:rgba(239,246,255,0.65);
                             color:#1d4ed8;
                             border-radius:8px;
                             padding:9px 10px;
@@ -1001,6 +993,11 @@
                             text-align:left;
                             cursor:pointer;
                             font-family:inherit;
+                            backdrop-filter:blur(8px);
+                            -webkit-backdrop-filter:blur(8px);
+                            transition:
+                                background .15s ease,
+                                border-color .15s ease;
                         "
                     >
 
@@ -1023,7 +1020,7 @@
 
                                 <div style="
                                     font-size:9px;
-                                    color:#60a5fa;
+                                    color:#3b82f6;
                                 ">
                                     New version v${latestVersion}
                                 </div>
@@ -1060,7 +1057,7 @@
 
                 <span style="
                     font-size:11px;
-                    color:#6b7280;
+                    color:#64748b;
                 ">
                     Today's status
                 </span>
@@ -1082,7 +1079,7 @@
 
             <div style="
                 font-size:10px;
-                color:#9ca3af;
+                color:#94a3b8;
                 margin-bottom:10px;
             ">
                 Last action: ${data.lastAction}
@@ -1104,15 +1101,15 @@
                 <!-- OFFICE -->
 
                 <div style="
-                    background:#f8fafc;
-                    border:1px solid #eef0f3;
-                    border-radius:8px;
+                    background:rgba(248,250,252,0.55);
+                    border:1px solid rgba(148,163,184,0.12);
+                    border-radius:9px;
                     padding:9px;
                 ">
 
                     <div style="
                         font-size:10px;
-                        color:#6b7280;
+                        color:#64748b;
                         margin-bottom:4px;
                     ">
                         Office
@@ -1134,15 +1131,15 @@
                 <!-- OUTSIDE -->
 
                 <div style="
-                    background:#f8fafc;
-                    border:1px solid #eef0f3;
-                    border-radius:8px;
+                    background:rgba(248,250,252,0.55);
+                    border:1px solid rgba(148,163,184,0.12);
+                    border-radius:9px;
                     padding:9px;
                 ">
 
                     <div style="
                         font-size:10px;
-                        color:#6b7280;
+                        color:#64748b;
                         margin-bottom:4px;
                     ">
                         Outside
@@ -1176,7 +1173,7 @@
 
                 <span style="
                     font-size:10px;
-                    color:#6b7280;
+                    color:#64748b;
                 ">
                     Outside limit
                 </span>
@@ -1194,12 +1191,14 @@
             </div>
 
 
-            <!-- PROGRESS -->
+            <!-- =========================================
+                 PROGRESS
+            ========================================== -->
 
             <div style="
                 width:100%;
                 height:5px;
-                background:#e5e7eb;
+                background:rgba(226,232,240,0.7);
                 border-radius:20px;
                 overflow:hidden;
                 margin-bottom:12px;
@@ -1225,12 +1224,12 @@
                 align-items:center;
                 justify-content:space-between;
                 padding-top:10px;
-                border-top:1px solid #f0f0f0;
+                border-top:1px solid rgba(148,163,184,0.16);
             ">
 
                 <span style="
                     font-size:10px;
-                    color:#6b7280;
+                    color:#64748b;
                 ">
                     Current status
                 </span>
@@ -1242,95 +1241,12 @@
                     color:${currentStatusColor};
                     background:${currentStatusBackground};
                     padding:4px 7px;
-                    border-radius:5px;
+                    border-radius:6px;
                 ">
                     ${data.currentStatus}
                 </span>
 
             </div>
-
-
-            <!-- =========================================
-                 GITHUB
-            ========================================== -->
-
-            <a
-                href="https://github.com/A-Rafeef"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    gap:5px;
-                    margin-top:10px;
-                    padding-top:9px;
-                    border-top:1px solid #f0f0f0;
-                    color:#6b7280;
-                    text-decoration:none;
-                    font-size:9px;
-                    font-weight:600;
-                    transition:color .2s ease;
-                "
-                onmouseover="
-                    this.style.color='#111827'
-                "
-                onmouseout="
-                    this.style.color='#6b7280'
-                "
-            >
-
-                <svg
-                    width="11"
-                    height="11"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                >
-
-                    <path d="
-                        M12 .5
-                        C5.65 .5 .5 5.65 .5 12
-                        c0 5.08 3.29 9.39 7.86 10.91
-                        .58 .11 .79-.25 .79-.55
-                        v-2.16
-                        c-3.2 .7-3.87-1.36-3.87-1.36
-                        -.53-1.33-1.28-1.68-1.28-1.68
-                        -1.04-.71 .08-.7 .08-.7
-                        1.15 .08 1.76 1.18 1.76 1.18
-                        1.02 1.75 2.68 1.25 3.33 .96
-                        .1-.74 .4-1.25 .73-1.54
-                        -2.55-.29-5.23-1.28-5.23-5.69
-                        0-1.26 .45-2.29 1.18-3.1
-                        -.12-.29-.51-1.47 .11-3.06
-                        0 0 .96-.31 3.15 1.18
-                        a10.9 10.9 0 0 1 5.74 0
-                        c2.19-1.49 3.15-1.18 3.15-1.18
-                        .62 1.59 .23 2.77 .11 3.06
-                        .73 .81 1.18 1.84 1.18 3.1
-                        0 4.42-2.69 5.39-5.25 5.68
-                        .41 .35 .78 1.04 .78 2.1
-                        v3.11
-                        c0 .3 .21 .66 .8 .55
-                        A11.51 11.51 0 0 0 23.5 12
-                        C23.5 5.65 18.35 .5 12 .5Z
-                    "/>
-
-                </svg>
-
-
-                <span>
-                    A-Rafeef
-                </span>
-
-
-                <span style="
-                    font-size:8px;
-                    opacity:.6;
-                ">
-                    ↗
-                </span>
-
-            </a>
 
         `;
 
@@ -1358,10 +1274,10 @@
                 function () {
 
                     this.style.background =
-                        '#dbeafe';
+                        'rgba(219,234,254,0.8)';
 
                     this.style.borderColor =
-                        '#93c5fd';
+                        'rgba(59,130,246,0.35)';
                 };
 
 
@@ -1369,10 +1285,10 @@
                 function () {
 
                     this.style.background =
-                        '#eff6ff';
+                        'rgba(239,246,255,0.65)';
 
                     this.style.borderColor =
-                        '#bfdbfe';
+                        'rgba(59,130,246,0.22)';
                 };
         }
     }
@@ -1428,5 +1344,3 @@
 
 
 })();
-
-v
