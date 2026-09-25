@@ -1,8 +1,7 @@
-
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.0.5
+// @version      1.0.6
 // @description  Bridgeon attendance visualization tool
 // @match        https://student.bridgeon.in/attendance
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -14,15 +13,13 @@
 // ==/UserScript==
 
 (function () {
-
     'use strict';
-
 
     // =========================================================
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
-    const CURRENT_VERSION = '1.0.4';
+    const CURRENT_VERSION = '1.0.6';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -231,7 +228,6 @@
     checkForUpdate(false);
 
 
-
     // =========================================================
     // ATTENDANCE SETTINGS
     // =========================================================
@@ -239,7 +235,6 @@
     const OFFICE_START = 9 * 60;
     const OFFICE_END = 17 * 60;
     const MAX_OUTSIDE = 90;
-
 
 
     // =========================================================
@@ -269,7 +264,6 @@
     }
 
 
-
     // =========================================================
     // FORMAT MINUTES
     // =========================================================
@@ -295,7 +289,6 @@
 
         return `${m}m`;
     }
-
 
 
     // =========================================================
@@ -356,7 +349,6 @@
     }
 
 
-
     // =========================================================
     // CALCULATE ATTENDANCE DATA
     // =========================================================
@@ -374,7 +366,6 @@
 
         let officeMinutes = 0;
         let outsideMinutes = 0;
-
 
 
         // =====================================================
@@ -421,7 +412,6 @@
                 }
             }
         }
-
 
 
         // =====================================================
@@ -479,7 +469,6 @@
         }
 
 
-
         // =====================================================
         // LATE STATUS
         // =====================================================
@@ -506,7 +495,7 @@
                 'On Time';
 
             statusColor =
-                '#38bdf8';
+                '#2563eb';
 
         }
 
@@ -516,9 +505,8 @@
                 `Late ${firstIn - OFFICE_START}m`;
 
             statusColor =
-                '#fb7185';
+                '#dc2626';
         }
-
 
 
         // =====================================================
@@ -539,7 +527,6 @@
             `${lastLog.type} ${lastLog.time}`;
 
 
-
         // =====================================================
         // OUTSIDE LIMIT
         // =====================================================
@@ -558,12 +545,19 @@
             );
 
 
-        const outsideColor =
-            outsideMinutes < 60
-                ? '#34d399'
-                : outsideMinutes < 90
-                    ? '#fbbf24'
-                    : '#f87171';
+        let outsideColor;
+
+        if (outsideMinutes < 60) {
+            outsideColor = '#16a34a';
+        }
+
+        else if (outsideMinutes < 90) {
+            outsideColor = '#d97706';
+        }
+
+        else {
+            outsideColor = '#dc2626';
+        }
 
 
         return {
@@ -581,10 +575,8 @@
 
             usagePercent,
             outsideColor
-
         };
     }
-
 
 
     // =========================================================
@@ -611,7 +603,7 @@
 
 
         // =====================================================
-        // NEW APPEARANCE
+        // MINIMAL LIGHT DESIGN
         // =====================================================
 
         badge.style.position =
@@ -624,34 +616,34 @@
             '20px';
 
         badge.style.width =
-            '190px';
+            '210px';
+
+        badge.style.boxSizing =
+            'border-box';
 
         badge.style.background =
-            'linear-gradient(145deg, #111827, #1e293b)';
+            '#ffffff';
 
         badge.style.border =
-            '1px solid rgba(56,189,248,.35)';
+            '1px solid #e5e7eb';
 
         badge.style.borderRadius =
-            '22px';
+            '12px';
 
         badge.style.padding =
-            '15px';
+            '14px';
 
         badge.style.zIndex =
             '999999';
 
         badge.style.color =
-            '#f8fafc';
+            '#111827';
 
         badge.style.fontFamily =
-            'Inter, system-ui, sans-serif';
+            'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
         badge.style.boxShadow =
-            '0 12px 35px rgba(0,0,0,.35)';
-
-        badge.style.backdropFilter =
-            'blur(12px)';
+            '0 4px 14px rgba(15, 23, 42, 0.08)';
 
 
         // Hidden initially
@@ -663,19 +655,18 @@
             'hidden';
 
         badge.style.transform =
-            'translateY(-25px) scale(.92)';
+            'translateY(-8px)';
 
         badge.style.transition =
-            'opacity .35s ease, ' +
-            'transform .35s ease, ' +
-            'visibility .35s ease';
+            'opacity .2s ease, ' +
+            'transform .2s ease, ' +
+            'visibility .2s ease';
 
 
         document.body.appendChild(
             badge
         );
     }
-
 
 
     // =========================================================
@@ -702,9 +693,8 @@
             '1';
 
         badge.style.transform =
-            'translateY(0) scale(1)';
+            'translateY(0)';
     }
-
 
 
     // =========================================================
@@ -728,7 +718,7 @@
             '0';
 
         badge.style.transform =
-            'translateY(-25px) scale(.92)';
+            'translateY(-8px)';
 
 
         setTimeout(() => {
@@ -736,9 +726,8 @@
             badge.style.visibility =
                 'hidden';
 
-        }, 350);
+        }, 200);
     }
-
 
 
     // =========================================================
@@ -767,9 +756,25 @@
         }
 
 
+        const isInside =
+            data.currentStatus === 'IN';
+
+
+        const currentStatusColor =
+            isInside
+                ? '#16a34a'
+                : '#6b7280';
+
+
+        const currentStatusBackground =
+            isInside
+                ? '#f0fdf4'
+                : '#f3f4f6';
+
+
         badge.innerHTML = `
 
-            <!-- Header -->
+            <!-- HEADER -->
 
             <div style="
                 display:flex;
@@ -783,32 +788,30 @@
                     align-items:center;
                     gap:7px;
                     font-size:13px;
-                    font-weight:800;
-                    color:${data.statusColor};
+                    font-weight:700;
+                    color:#111827;
                 ">
 
                     <div style="
-                        width:9px;
-                        height:9px;
+                        width:8px;
+                        height:8px;
                         border-radius:50%;
                         background:${data.statusColor};
-                        box-shadow:0 0 10px ${data.statusColor};
                     "></div>
 
-                    ${data.statusText}
+                    Attendance
 
                 </div>
 
 
-                <!-- Version -->
-
                 <span style="
                     font-size:9px;
+                    font-weight:600;
+                    color:#6b7280;
+                    background:#f3f4f6;
+                    border:1px solid #e5e7eb;
                     padding:3px 6px;
-                    border-radius:6px;
-                    background:rgba(56,189,248,.12);
-                    color:#38bdf8;
-                    font-weight:700;
+                    border-radius:5px;
                 ">
                     v${CURRENT_VERSION}
                 </span>
@@ -816,168 +819,184 @@
             </div>
 
 
+            <!-- STATUS -->
 
-            <!-- Last action -->
+            <div style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                margin-bottom:12px;
+            ">
+
+                <span style="
+                    font-size:11px;
+                    color:#6b7280;
+                ">
+                    Today's status
+                </span>
+
+                <span style="
+                    font-size:11px;
+                    font-weight:700;
+                    color:${data.statusColor};
+                ">
+                    ${data.statusText}
+                </span>
+
+            </div>
+
+
+            <!-- LAST ACTION -->
 
             <div style="
                 font-size:10px;
-                color:#94a3b8;
-                margin-bottom:13px;
-            ">
-
-                ${data.lastAction}
-
-            </div>
-
-
-
-            <!-- Office -->
-
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:8px 9px;
-                margin-bottom:7px;
-                border-radius:10px;
-                background:rgba(255,255,255,.05);
-            ">
-
-                <span style="
-                    font-size:11px;
-                    color:#94a3b8;
-                ">
-                    🏢 Office
-                </span>
-
-
-                <b style="
-                    font-size:12px;
-                    color:#f8fafc;
-                ">
-                    ${formatMinutes(
-                        data.officeMinutes
-                    )}
-                </b>
-
-            </div>
-
-
-
-            <!-- Outside -->
-
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:8px 9px;
+                color:#9ca3af;
                 margin-bottom:10px;
-                border-radius:10px;
-                background:rgba(255,255,255,.05);
+            ">
+                Last action: ${data.lastAction}
+            </div>
+
+
+            <!-- STATS -->
+
+            <div style="
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:7px;
+                margin-bottom:11px;
             ">
 
-                <span style="
-                    font-size:11px;
-                    color:#94a3b8;
+
+                <!-- OFFICE -->
+
+                <div style="
+                    background:#f8fafc;
+                    border:1px solid #eef0f3;
+                    border-radius:8px;
+                    padding:9px;
                 ">
-                    🚶 Outside
-                </span>
+
+                    <div style="
+                        font-size:10px;
+                        color:#6b7280;
+                        margin-bottom:4px;
+                    ">
+                        Office
+                    </div>
+
+                    <div style="
+                        font-size:13px;
+                        font-weight:700;
+                        color:#111827;
+                    ">
+                        ${formatMinutes(data.officeMinutes)}
+                    </div>
+
+                </div>
 
 
-                <b style="
-                    font-size:12px;
-                    color:${data.outsideColor};
+                <!-- OUTSIDE -->
+
+                <div style="
+                    background:#f8fafc;
+                    border:1px solid #eef0f3;
+                    border-radius:8px;
+                    padding:9px;
                 ">
-                    ${formatMinutes(
-                        data.outsideMinutes
-                    )}
-                </b>
+
+                    <div style="
+                        font-size:10px;
+                        color:#6b7280;
+                        margin-bottom:4px;
+                    ">
+                        Outside
+                    </div>
+
+                    <div style="
+                        font-size:13px;
+                        font-weight:700;
+                        color:${data.outsideColor};
+                    ">
+                        ${formatMinutes(data.outsideMinutes)}
+                    </div>
+
+                </div>
 
             </div>
 
 
+            <!-- OUTSIDE PROGRESS -->
 
-            <!-- Progress bar -->
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:6px;
+            ">
+
+                <span style="
+                    font-size:10px;
+                    color:#6b7280;
+                ">
+                    Outside limit
+                </span>
+
+                <span style="
+                    font-size:10px;
+                    font-weight:600;
+                    color:#374151;
+                ">
+                    ${formatMinutes(data.remainingOutside)} left
+                </span>
+
+            </div>
+
 
             <div style="
                 width:100%;
-                height:6px;
-                background:#334155;
-                border-radius:50px;
+                height:5px;
+                background:#e5e7eb;
+                border-radius:20px;
                 overflow:hidden;
-                margin:9px 0;
+                margin-bottom:12px;
             ">
 
                 <div style="
                     width:${data.usagePercent}%;
                     height:100%;
                     background:${data.outsideColor};
-                    border-radius:50px;
-                    box-shadow:0 0 8px ${data.outsideColor};
-                    transition:.3s;
+                    border-radius:20px;
+                    transition:width .3s ease;
                 "></div>
 
             </div>
 
 
-
-            <!-- Remaining -->
+            <!-- CURRENT STATUS -->
 
             <div style="
                 display:flex;
-                justify-content:space-between;
                 align-items:center;
-                font-size:10px;
-                color:#94a3b8;
-                margin-bottom:10px;
-            ">
-
-                <span>
-                    Outside limit
-                </span>
-
-
-                <b style="
-                    color:#e2e8f0;
-                ">
-                    ${formatMinutes(
-                        data.remainingOutside
-                    )}
-                    left
-                </b>
-
-            </div>
-
-
-
-            <!-- Current status -->
-
-            <div style="
-                border-top:1px solid rgba(255,255,255,.08);
+                justify-content:space-between;
                 padding-top:10px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                font-size:10px;
+                border-top:1px solid #f0f0f0;
             ">
 
                 <span style="
-                    color:#64748b;
+                    font-size:10px;
+                    color:#6b7280;
                 ">
                     Current status
                 </span>
 
 
                 <span style="
-                    padding:4px 8px;
-                    border-radius:7px;
-                    background:${data.currentStatus === 'IN'
-                        ? 'rgba(52,211,153,.12)'
-                        : 'rgba(248,113,113,.12)'};
-                    color:${data.currentStatus === 'IN'
-                        ? '#34d399'
-                        : '#f87171'};
-                    font-weight:800;
+                    font-size:10px;
+                    font-weight:700;
+                    color:${currentStatusColor};
+                    background:${currentStatusBackground};
+                    padding:4px 7px;
+                    border-radius:5px;
                 ">
                     ${data.currentStatus}
                 </span>
@@ -985,8 +1004,7 @@
             </div>
 
 
-
-            <!-- GitHub Profile -->
+            <!-- GITHUB -->
 
             <a
                 href="https://github.com/A-Rafeef"
@@ -996,21 +1014,19 @@
                     display:flex;
                     align-items:center;
                     justify-content:center;
-                    gap:6px;
+                    gap:5px;
                     margin-top:10px;
                     padding-top:9px;
-                    border-top:1px solid rgba(255,255,255,.08);
-                    color:#94a3b8;
+                    border-top:1px solid #f0f0f0;
+                    color:#6b7280;
                     text-decoration:none;
                     font-size:9px;
                     font-weight:600;
-                    transition:.2s;
+                    transition:color .2s ease;
                 "
-                onmouseover="this.style.color='#f8fafc'"
-                onmouseout="this.style.color='#94a3b8'"
+                onmouseover="this.style.color='#111827'"
+                onmouseout="this.style.color='#6b7280'"
             >
-
-                <!-- GitHub icon -->
 
                 <svg
                     width="11"
@@ -1068,7 +1084,6 @@
     }
 
 
-
     // =========================================================
     // VISIBILITY
     // =========================================================
@@ -1095,7 +1110,6 @@
     }
 
 
-
     // =========================================================
     // START
     // =========================================================
@@ -1112,4 +1126,3 @@
     }, 1000);
 
 })();
-
