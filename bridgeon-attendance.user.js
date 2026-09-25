@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.8
+// @version      1.1.9
 // @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -31,7 +31,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.8';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.9';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -431,9 +431,9 @@
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                width: 242px;
+                width: 246px;
                 box-sizing: border-box;
-                padding: 15px 14px 13px 14px;
+                padding: 13px 13px 11px 13px;
                 z-index: 999999;
                 color: #1C1C1E;
                 text-shadow: none;
@@ -442,7 +442,7 @@
                 /* VERY LIGHT WHITE THEME - CRISP FROSTED GLASS */
                 background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(246, 248, 252, 0.88) 100%);
                 border: 1px solid rgba(255, 255, 255, 0.95);
-                border-radius: 24px;
+                border-radius: 22px;
                 backdrop-filter: blur(35px) saturate(180%);
                 -webkit-backdrop-filter: blur(35px) saturate(180%);
 
@@ -548,6 +548,12 @@
                 transform: scale(0.95);
             }
 
+            #bridgeon-discussions-bar:hover {
+                background: rgba(0, 122, 255, 0.12) !important;
+                border-color: rgba(0, 122, 255, 0.32) !important;
+                transform: translateY(-1px);
+            }
+
             #bridgeon-update-button:hover {
                 background: rgba(0, 122, 255, 0.12) !important;
                 border-color: rgba(0, 122, 255, 0.32) !important;
@@ -627,17 +633,13 @@
                     display:flex;
                     align-items:center;
                     justify-content:space-between;
-                    margin-bottom:11px;
+                    margin-bottom:8px;
                 ">
-                    <!-- LOGO & PULSE BEACON -->
+                    <!-- LIVE STATUS & BEACON -->
                     <div style="
                         display:flex;
                         align-items:center;
                         gap:7px;
-                        font-size:12px;
-                        font-weight:700;
-                        color:#1C1C1E;
-                        letter-spacing:-0.015em;
                     ">
                         <div style="position:relative; width:8px; height:8px; display:flex; align-items:center; justify-content:center;">
                             <div id="bridgeon-beacon-ring" class="bridgeon-pulse-ring" style="
@@ -655,58 +657,29 @@
                                 box-shadow:0 0 8px rgba(52, 199, 89, 0.5);
                             "></div>
                         </div>
-                        Attendance
-                    </div>
-
-                    <!-- ACTIONS: FEEDBACK, VERSION PILL & MINIMIZE BUTTON -->
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <a
-                            id="bridgeon-feedback-btn"
-                            href="https://github.com/A-Rafeef/bridgeon-timer/discussions"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="bridgeon-btn-action"
-                            title="Share Suggestions & Ideas on GitHub Discussions"
-                            onclick="event.stopPropagation();"
-                            style="
-                                width:19px;
-                                height:19px;
-                                text-decoration:none;
-                                display:inline-flex;
-                                align-items:center;
-                                justify-content:center;
-                            "
-                        >
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                        </a>
-
-                        <span style="
-                            font-size:8.5px;
-                            font-weight:600;
-                            color:#636366;
-                            background: rgba(0, 0, 0, 0.04);
-                            border: 1px solid rgba(0, 0, 0, 0.06);
-                            box-shadow: inset 0 1px 1px #FFFFFF;
-                            padding: 2px 7px;
-                            border-radius: 999px;
-                        ">
-                            v${CURRENT_VERSION}
-                        </span>
-
-                        <button id="bridgeon-minimize-btn" class="bridgeon-btn-action" title="Minimize to Island" style="
-                            width:19px;
-                            height:19px;
+                        <span id="bridgeon-header-status" style="
                             font-size:10px;
-                            line-height:1;
+                            font-weight:700;
+                            color:#1C1C1E;
+                            letter-spacing:0.02em;
+                            text-transform:uppercase;
                         ">
-                            −
-                        </button>
+                            PUNCHED IN · ON TIME
+                        </span>
                     </div>
+
+                    <!-- MINIMIZE ACTION BUTTON -->
+                    <button id="bridgeon-minimize-btn" class="bridgeon-btn-action" title="Minimize to Island" style="
+                        width:19px;
+                        height:19px;
+                        font-size:11px;
+                        line-height:1;
+                    ">
+                        −
+                    </button>
                 </div>
 
-                <!-- UPDATE BANNER (LIGHT NOTIFICATION STYLE) -->
+                <!-- UPDATE BANNER (SHOWN ONLY WHEN NEW SCRIPT VERSION IS AVAILABLE) -->
                 <button
                     id="bridgeon-update-button"
                     style="
@@ -716,9 +689,9 @@
                         border:1px solid rgba(0, 122, 255, 0.22);
                         background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(0, 122, 255, 0.03) 100%);
                         color:#007AFF;
-                        border-radius:15px;
-                        padding:8px 10px;
-                        margin-bottom:10px;
+                        border-radius:14px;
+                        padding:7px 9px;
+                        margin-bottom:8px;
                         text-align:left;
                         cursor:pointer;
                         font-family:inherit;
@@ -733,85 +706,47 @@
                             <div style="font-size:9.5px; font-weight:700; color:#007AFF; margin-bottom:1px;">
                                 Update Available
                             </div>
-                            <div id="bridgeon-update-version-label" style="font-size:8.5px; color:rgba(0, 122, 255, 0.8);">
+                            <div id="bridgeon-update-version-label" style="font-size:8px; color:rgba(0, 122, 255, 0.8);">
                                 Version ...
                             </div>
                         </div>
-                        <span style="font-size:12px; font-weight:700; color:#007AFF;">→</span>
+                        <span style="font-size:11px; font-weight:700; color:#007AFF;">→</span>
                     </div>
                 </button>
 
-                <!-- DATE LABEL ROW -->
-                <div style="
-                    position:relative;
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                    margin-bottom:8px;
-                ">
-                    <span style="font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#8E8E93;">Date</span>
-                    <span id="bridgeon-date-label" style="
-                        font-size:9px;
-                        font-weight:600;
-                        color:#3A3A3C;
-                        background: rgba(0, 0, 0, 0.04);
-                        border: 1px solid rgba(0, 0, 0, 0.06);
-                        padding: 2px 8px;
-                        border-radius: 999px;
-                        font-variant-numeric: tabular-nums;
-                    ">--</span>
-                </div>
-
-                <!-- STATUS ROW -->
-                <div style="
-                    position:relative;
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                    margin-bottom:10px;
-                ">
-                    <span id="bridgeon-status-label" style="font-size:9.5px; font-weight:500; color:#8E8E93;">Status</span>
-                    <span id="bridgeon-status-val" style="
-                        font-size:10.5px;
-                        font-weight:700;
-                        color:#34C759;
-                        letter-spacing:-0.01em;
-                    ">
-                        On Time
-                    </span>
-                </div>
-
-                <!-- HERO STAT TILES (CRISP WHITE CARDS) -->
+                <!-- HERO STAT TILES (SYMMETRICAL WHITE GLASS CARDS) -->
                 <div style="
                     position:relative;
                     display:grid;
                     grid-template-columns:1fr 1fr;
                     gap:7px;
-                    margin-bottom:11px;
+                    margin-bottom:9px;
                 ">
                     <!-- OFFICE TILE -->
                     <div style="
                         position:relative;
-                        background: rgba(255, 255, 255, 0.88);
+                        background: rgba(255, 255, 255, 0.92);
                         border: 1px solid rgba(0, 0, 0, 0.05);
                         border-radius: 16px;
-                        padding: 10px 10px 9px 10px;
+                        padding: 9px 8px 8px 8px;
                         box-shadow:
                             inset 0 1px 1px #FFFFFF,
-                            0 2px 6px rgba(0, 0, 0, 0.04);
+                            0 2px 6px rgba(0, 0, 0, 0.03);
+                        text-align:center;
                     ">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
-                            <span style="font-size:9.5px; font-weight:500; color:#8E8E93;">Office</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </div>
+                        <span style="
+                            font-size:9px;
+                            font-weight:600;
+                            color:#8E8E93;
+                            text-transform:uppercase;
+                            letter-spacing:0.04em;
+                        ">Office</span>
                         <div id="bridgeon-office-val" style="
-                            font-size:15px;
-                            font-weight:700;
+                            font-size:17px;
+                            font-weight:800;
                             color:#1C1C1E;
                             letter-spacing:-0.02em;
+                            margin-top:2px;
                         ">
                             0m
                         </div>
@@ -820,103 +755,106 @@
                     <!-- OUTSIDE TILE -->
                     <div style="
                         position:relative;
-                        background: rgba(255, 255, 255, 0.88);
+                        background: rgba(255, 255, 255, 0.92);
                         border: 1px solid rgba(0, 0, 0, 0.05);
                         border-radius: 16px;
-                        padding: 10px 10px 9px 10px;
+                        padding: 9px 8px 7px 8px;
                         box-shadow:
                             inset 0 1px 1px #FFFFFF,
-                            0 2px 6px rgba(0, 0, 0, 0.04);
+                            0 2px 6px rgba(0, 0, 0, 0.03);
+                        text-align:center;
                     ">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
-                            <span style="font-size:9.5px; font-weight:500; color:#8E8E93;">Outside</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                                <line x1="6" y1="1" x2="6" y2="4"></line>
-                                <line x1="10" y1="1" x2="10" y2="4"></line>
-                                <line x1="14" y1="1" x2="14" y2="4"></line>
-                            </svg>
-                        </div>
+                        <span style="
+                            font-size:9px;
+                            font-weight:600;
+                            color:#8E8E93;
+                            text-transform:uppercase;
+                            letter-spacing:0.04em;
+                        ">Outside</span>
                         <div id="bridgeon-outside-val" style="
-                            font-size:15px;
-                            font-weight:700;
+                            font-size:17px;
+                            font-weight:800;
                             color:#34C759;
                             letter-spacing:-0.02em;
+                            margin-top:2px;
                         ">
                             0m
                         </div>
+                        <div id="bridgeon-outside-left-val" style="
+                            font-size:8.5px;
+                            font-weight:500;
+                            color:#8E8E93;
+                            margin-top:1px;
+                        ">
+                            1h 30m left
+                        </div>
                     </div>
                 </div>
 
-                <!-- PROGRESS & REMAINING LIMIT -->
-                <div style="
-                    position:relative;
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                    margin-bottom:6px;
-                ">
-                    <span style="font-size:9px; font-weight:500; color:#8E8E93;">Break allowance</span>
-                    <span id="bridgeon-outside-left-val" style="font-size:9px; font-weight:600; color:#3A3A3C; font-variant-numeric:tabular-nums;">
-                        1h 30m left
-                    </span>
-                </div>
-
-                <!-- LIGHT PROGRESS TRACK -->
-                <div style="
-                    position:relative;
-                    width:100%;
-                    height:6px;
-                    background:rgba(0, 0, 0, 0.06);
-                    border:1px solid rgba(0, 0, 0, 0.04);
-                    border-radius:99px;
-                    overflow:hidden;
-                    margin-bottom:12px;
-                ">
-                    <div id="bridgeon-progress-bar" style="
-                        width:0%;
-                        height:100%;
-                        background: linear-gradient(90deg, #34C759, #30D158);
-                        border-radius:99px;
-                        transition:width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
-                        box-shadow:0 0 8px rgba(52, 199, 89, 0.35);
-                    "></div>
-                </div>
-
-                <!-- BOTTOM LIVE ACTIVITY / LIGHT CAPSULE -->
-                <div style="
-                    position:relative;
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                    padding-top:10px;
-                    border-top:1px solid rgba(0, 0, 0, 0.06);
-                ">
-                    <div style="display:flex; flex-direction:column; gap:2px;">
-                        <span style="font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#8E8E93;">
-                            Activity
-                        </span>
-                        <span id="bridgeon-last-action" style="font-size:9px; font-weight:500; color:#3A3A3C;">
-                            --
-                        </span>
-                    </div>
-
-                    <span id="bridgeon-current-status-val" style="
-                        font-size:9px;
-                        font-weight:700;
-                        letter-spacing:0.04em;
-                        text-transform:uppercase;
-                        color:#28CD41;
-                        background: rgba(52, 199, 89, 0.12);
-                        border: 1px solid rgba(52, 199, 89, 0.28);
-                        padding:4px 10px;
-                        border-radius:999px;
-                        box-shadow: 0 1px 3px rgba(52, 199, 89, 0.15);
+                <!-- BREAK ALLOWANCE PROGRESS -->
+                <div style="position:relative; margin-bottom:9px;">
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-bottom:4px;
                     ">
-                        --
-                    </span>
+                        <span id="bridgeon-break-label" style="font-size:8.5px; font-weight:500; color:#8E8E93;">
+                            0% break allowance used
+                        </span>
+                    </div>
+                    <div style="
+                        position:relative;
+                        width:100%;
+                        height:5px;
+                        background:rgba(0, 0, 0, 0.06);
+                        border-radius:99px;
+                        overflow:hidden;
+                    ">
+                        <div id="bridgeon-progress-bar" style="
+                            width:0%;
+                            height:100%;
+                            background: linear-gradient(90deg, #34C759, #30D158);
+                            border-radius:99px;
+                            transition:width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+                            box-shadow:0 0 6px rgba(52, 199, 89, 0.35);
+                        "></div>
+                    </div>
                 </div>
+
+                <!-- DEDICATED GITHUB DISCUSSIONS BAR -->
+                <a
+                    id="bridgeon-discussions-bar"
+                    href="https://github.com/A-Rafeef/bridgeon-timer/discussions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onclick="event.stopPropagation();"
+                    title="Open GitHub Discussions to share ideas or feedback"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:6px 9px;
+                        background: rgba(0, 122, 255, 0.06);
+                        border: 1px solid rgba(0, 122, 255, 0.18);
+                        border-radius: 12px;
+                        text-decoration:none;
+                        cursor:pointer;
+                        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                    "
+                >
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span style="font-size:8.5px; font-weight:600; color:#007AFF;">
+                            Join GitHub Discussions
+                        </span>
+                    </div>
+                    <span style="font-size:9.5px; font-weight:700; color:#007AFF;">→</span>
+                </a>
 
             </div>
         `;
@@ -1010,19 +948,16 @@
         // Elements
         const beaconRing = document.getElementById('bridgeon-beacon-ring');
         const statusDot = document.getElementById('bridgeon-status-dot');
+        const headerStatus = document.getElementById('bridgeon-header-status');
         const islandPulse = document.getElementById('bridgeon-island-pulse');
         const islandDot = document.getElementById('bridgeon-island-dot');
         const islandLabel = document.getElementById('bridgeon-island-label');
 
-        const statusVal = document.getElementById('bridgeon-status-val');
-        const lastActionEl = document.getElementById('bridgeon-last-action');
         const officeVal = document.getElementById('bridgeon-office-val');
         const outsideVal = document.getElementById('bridgeon-outside-val');
         const outsideLeftVal = document.getElementById('bridgeon-outside-left-val');
+        const breakLabel = document.getElementById('bridgeon-break-label');
         const progressBar = document.getElementById('bridgeon-progress-bar');
-        const currentStatusVal = document.getElementById('bridgeon-current-status-val');
-        const dateLabelEl = document.getElementById('bridgeon-date-label');
-        const statusLabelEl = document.getElementById('bridgeon-status-label');
 
         // Beacon updates — pulse ring only animates when user is currently IN
         const pulseAnimation = isInside ? '' : 'none';
@@ -1033,6 +968,10 @@
         if (statusDot) {
             statusDot.style.background = currentStatusColor;
             statusDot.style.boxShadow = isInside ? '0 0 8px rgba(52, 199, 89, 0.5)' : 'none';
+        }
+        if (headerStatus) {
+            const punchText = isInside ? 'PUNCHED IN' : 'PUNCHED OUT';
+            headerStatus.textContent = `${punchText} · ${data.statusText.toUpperCase()}`;
         }
         if (islandPulse) {
             islandPulse.style.background = currentStatusColor;
@@ -1046,22 +985,7 @@
             islandLabel.textContent = `${data.currentStatus} · ${formatMinutes(isInside ? data.officeMinutes : data.outsideMinutes)}`;
         }
 
-        // Date label — shows the active accordion date (e.g. "25 Sep 2026")
-        if (dateLabelEl) {
-            dateLabelEl.textContent = data.activeDate || 'Today';
-        }
-        if (statusLabelEl) {
-            statusLabelEl.textContent = data.activeDate ? 'Status' : "Today's status";
-        }
-
         // Full view updates
-        if (statusVal) {
-            statusVal.textContent = data.statusText;
-            statusVal.style.color = data.statusColor;
-        }
-        if (lastActionEl) {
-            lastActionEl.textContent = data.lastAction;
-        }
         if (officeVal) {
             officeVal.textContent = formatMinutes(data.officeMinutes);
         }
@@ -1072,6 +996,9 @@
         if (outsideLeftVal) {
             outsideLeftVal.textContent = `${formatMinutes(data.remainingOutside)} left`;
         }
+        if (breakLabel) {
+            breakLabel.textContent = `${Math.round(data.usagePercent)}% break allowance used`;
+        }
         if (progressBar) {
             progressBar.style.width = `${data.usagePercent}%`;
             progressBar.style.background = data.outsideColor;
@@ -1081,14 +1008,7 @@
                 '#FF3B30': 'rgba(255, 59, 48, 0.35)'
             };
             const glowColor = glowMap[data.outsideColor] || 'rgba(52, 199, 89, 0.35)';
-            progressBar.style.boxShadow = `0 0 8px ${glowColor}`;
-        }
-        if (currentStatusVal) {
-            currentStatusVal.textContent = data.currentStatus;
-            currentStatusVal.style.color = currentStatusColor;
-            currentStatusVal.style.background = currentStatusBackground;
-            currentStatusVal.style.borderColor = currentStatusBorder;
-            currentStatusVal.style.boxShadow = currentStatusShadow;
+            progressBar.style.boxShadow = `0 0 6px ${glowColor}`;
         }
     }
 
