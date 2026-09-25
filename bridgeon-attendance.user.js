@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.0
+// @version      1.1.1
 // @description  Bridgeon attendance visualization tool with iOS-inspired frosted glassmorphism
-// @match        https://student.bridgeon.in/attendance
+// @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
 // @downloadURL  https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
 // @grant        GM_xmlhttpRequest
@@ -16,11 +16,20 @@
     'use strict';
 
     // =========================================================
+    // PAGE ROUTE CHECK (ONLY SHOW ON /attendance)
+    // =========================================================
+
+    function isAttendancePage() {
+        const path = window.location.pathname.replace(/\/+$/, '');
+        return path === '/attendance';
+    }
+
+    // =========================================================
     // VERSION / UPDATE SYSTEM
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.0';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.1';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -231,6 +240,8 @@
     const LOG_REGEX = /^(in|out)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm))$/i;
 
     function getAttendanceLogs() {
+        if (!isAttendancePage()) return [];
+
         const chips = document.querySelectorAll('.MuiChip-label');
         const logs = [];
 
@@ -259,6 +270,10 @@
     // =========================================================
 
     function calculateData() {
+        if (!isAttendancePage()) {
+            return null;
+        }
+
         const logs = getAttendanceLogs();
 
         if (!logs.length) {
@@ -411,9 +426,9 @@
             }
 
             #bridgeon-badge.bridgeon-visible {
-                opacity: 1;
-                visibility: visible;
-                transform: translateY(0) scale(1);
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateY(0) scale(1) !important;
             }
 
             /* DYNAMIC ISLAND MINIMIZED STATE */
@@ -819,6 +834,10 @@
     // =========================================================
 
     function showBadge() {
+        if (!isAttendancePage()) {
+            hideBadge();
+            return;
+        }
         const badge = document.getElementById('bridgeon-badge');
         if (!badge) return;
         badge.classList.add('bridgeon-visible');
@@ -835,6 +854,11 @@
     // =========================================================
 
     function updateBadge() {
+        if (!isAttendancePage()) {
+            hideBadge();
+            return;
+        }
+
         createBadge();
 
         // Update banner
@@ -923,10 +947,15 @@
     }
 
     // =========================================================
-    // VISIBILITY HANDLING
+    // VISIBILITY HANDLING (STRICTLY ON /attendance)
     // =========================================================
 
     function handleVisibility() {
+        if (!isAttendancePage()) {
+            hideBadge();
+            return;
+        }
+
         const expandedIcon = document.querySelector('[data-testid="ExpandLessIcon"]');
         const collapsedIcon = document.querySelector('[data-testid="ExpandMoreIcon"]');
 
@@ -938,20 +967,32 @@
             const hasChips = document.querySelector('.MuiChip-label');
             if (hasChips) {
                 showBadge();
+            } else {
+                hideBadge();
             }
         }
     }
+
+    // Listen to client-side routing
+    window.addEventListener('popstate', handleVisibility);
+    window.addEventListener('hashchange', handleVisibility);
 
     // =========================================================
     // INITIALIZATION & REAL-TIME TICKER
     // =========================================================
 
-    createBadge();
-    updateBadge();
-    handleVisibility();
+    if (isAttendancePage()) {
+        createBadge();
+        updateBadge();
+        handleVisibility();
+    }
 
-    // 1-second live ticker
+    // Live ticker: tracks route changes and active attendance
     setInterval(() => {
+        if (!isAttendancePage()) {
+            hideBadge();
+            return;
+        }
         updateBadge();
         handleVisibility();
     }, 1000);
