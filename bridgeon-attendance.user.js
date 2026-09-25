@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bridgeon Attendance
 // @namespace    https://github.com/A-Rafeef/bridgeon-timer
-// @version      1.1.2
+// @version      1.1.3
 // @description  Bridgeon attendance visualization tool featuring Apple-inspired Liquid Glass translucent material
 // @match        https://student.bridgeon.in/*
 // @updateURL    https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/bridgeon-attendance.user.js
@@ -20,8 +20,10 @@
     // =========================================================
 
     function isAttendancePage() {
+        // Support both pathname-based and hash-based routing (React Router)
         const path = window.location.pathname.replace(/\/+$/, '');
-        return path === '/attendance';
+        const hash = window.location.hash.replace(/^#\/?/, '').replace(/\/+$/, '');
+        return path === '/attendance' || hash === 'attendance';
     }
 
     // =========================================================
@@ -29,7 +31,7 @@
     // =========================================================
 
     const CURRENT_VERSION =
-        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.2';
+        (typeof GM_info !== 'undefined' && GM_info?.script?.version) || '1.1.3';
 
     const VERSION_URL =
         'https://raw.githubusercontent.com/A-Rafeef/bridgeon-timer/main/version.json';
@@ -495,7 +497,6 @@
             }
 
             .bridgeon-btn-action {
-                border: none;
                 outline: none;
                 cursor: pointer;
                 background: rgba(255, 255, 255, 0.08);
@@ -952,16 +953,23 @@
         const progressBar = document.getElementById('bridgeon-progress-bar');
         const currentStatusVal = document.getElementById('bridgeon-current-status-val');
 
-        // Beacon updates
-        if (beaconRing) beaconRing.style.background = currentStatusColor;
+        // Beacon updates — pulse ring only animates when user is currently IN
+        const pulseAnimation = isInside ? '' : 'none';
+        if (beaconRing) {
+            beaconRing.style.background = currentStatusColor;
+            beaconRing.style.animationName = isInside ? 'bridgeon-pulse' : 'none';
+        }
         if (statusDot) {
             statusDot.style.background = currentStatusColor;
-            statusDot.style.boxShadow = `0 0 12px ${currentStatusColor}`;
+            statusDot.style.boxShadow = isInside ? `0 0 12px ${currentStatusColor}` : 'none';
         }
-        if (islandPulse) islandPulse.style.background = currentStatusColor;
+        if (islandPulse) {
+            islandPulse.style.background = currentStatusColor;
+            islandPulse.style.animationName = isInside ? 'bridgeon-pulse' : 'none';
+        }
         if (islandDot) {
             islandDot.style.background = currentStatusColor;
-            islandDot.style.boxShadow = `0 0 12px ${currentStatusColor}`;
+            islandDot.style.boxShadow = isInside ? `0 0 12px ${currentStatusColor}` : 'none';
         }
         if (islandLabel) {
             islandLabel.textContent = `${data.currentStatus} · ${formatMinutes(isInside ? data.officeMinutes : data.outsideMinutes)}`;
@@ -988,7 +996,10 @@
         if (progressBar) {
             progressBar.style.width = `${data.usagePercent}%`;
             progressBar.style.background = data.outsideColor;
-            progressBar.style.boxShadow = `0 0 10px ${data.outsideColor}88, inset 0 1px 1px rgba(255, 255, 255, 0.3)`;
+            // Use rgba() for the glow instead of 8-digit hex suffix for broader compatibility
+            const glowMap = { '#30D158': 'rgba(48,209,88,0.45)', '#FF9F0A': 'rgba(255,159,10,0.45)', '#FF453A': 'rgba(255,69,58,0.45)' };
+            const glowColor = glowMap[data.outsideColor] || 'rgba(48,209,88,0.45)';
+            progressBar.style.boxShadow = `0 0 10px ${glowColor}, inset 0 1px 1px rgba(255, 255, 255, 0.3)`;
         }
         if (currentStatusVal) {
             currentStatusVal.textContent = data.currentStatus;
