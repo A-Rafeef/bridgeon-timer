@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridgeon Attendance UI - Smooth Animations & Design Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bridgeon-accent: #10B981;
+            --bridgeon-opacity: 0.90;
+            --bridgeon-bg: rgba(6, 17, 36, var(--bridgeon-opacity));
+            --bridgeon-card-bg: rgba(14, 28, 54, 0.65);
+            --bridgeon-text-primary: #FFFFFF;
+            --bridgeon-text-secondary: #94A3B8;
+            --bridgeon-border: rgba(255, 255, 255, 0.12);
+            --bridgeon-glow: 0 16px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        [data-bridgeon-theme="light"] {
+            --bridgeon-bg: rgba(255, 255, 255, var(--bridgeon-opacity));
+            --bridgeon-card-bg: rgba(241, 245, 249, 0.85);
+            --bridgeon-text-primary: #0F172A;
+            --bridgeon-text-secondary: #64748B;
+            --bridgeon-border: rgba(0, 0, 0, 0.08);
+            --bridgeon-glow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 20%, #1e3a5f 0%, #0c172b 40%, #060c18 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #FFFFFF;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+
+        /* Ambient blurred background bokeh lights */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.18) 0%, rgba(14, 165, 233, 0) 70%);
+            top: 15%;
+            left: 20%;
+            filter: blur(50px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.14) 0%, rgba(245, 158, 11, 0) 70%);
+            bottom: 15%;
+            right: 20%;
+            filter: blur(60px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .showcase-header {
+            text-align: center;
+            margin-bottom: 24px;
+            z-index: 1;
+        }
+
+        .showcase-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #FFFFFF, #94A3B8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .showcase-subtitle {
+            font-size: 14px;
+            color: #94A3B8;
+        }
+
+        .demo-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .demo-trigger-btn {
+            background: rgba(56, 189, 248, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38BDF8;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 15px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .demo-trigger-btn:hover {
+            background: rgba(56, 189, 248, 0.28);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+        }
+
+        .demo-trigger-btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        /* Mode Switcher Tabs */
+        .mode-switcher {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bridgeon-border);
+            padding: 4px;
+            border-radius: 999px;
+            margin-bottom: 25px;
+            z-index: 1;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: #94A3B8;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: inherit;
+        }
+
+        .mode-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .showcase-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* Glass Card */
+        .bridgeon-glass-card {
+            width: 285px;
+            background: var(--bridgeon-bg);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--bridgeon-border);
+            border-radius: 24px;
+            padding: 18px 20px;
+            box-shadow: var(--bridgeon-glow);
+            color: var(--bridgeon-text-primary);
+            user-select: none;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Top Header */
+        .bridgeon-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .bridgeon-status-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bridgeon-beacon-wrapper {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bridgeon-beacon-pulse {
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: var(--bridgeon-accent);
+            opacity: 0.6;
+            animation: bridgeon-radiate 2.8s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+            pointer-events: none;
+        }
+
+        .bridgeon-beacon-pulse-delayed {
+            animation-delay: 1.4s !important;
+        }
+
+        .bridgeon-beacon-dot {
+            position: relative;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bridgeon-accent);
+            box-shadow: 0 0 12px var(--bridgeon-accent);
+            transition: background 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes bridgeon-radiate {
+            0% { transform: scale(0.85); opacity: 0.85; }
+            50% { opacity: 0.3; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        .bridgeon-status-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bridgeon-status-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: var(--bridgeon-accent);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            transition: color 0.3s ease;
+        }
+
+        .bridgeon-status-sub {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: var(--bridgeon-text-secondary);
+            margin-top: 1px;
+        }
+
+        .bridgeon-icon-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--bridgeon-text-secondary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        background 0.22s ease,
+                        color 0.22s ease,
+                        border-color 0.22s ease,
+                        box-shadow 0.25s ease;
+            font-size: 13px;
+            outline: none;
+            padding: 0;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-icon-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .bridgeon-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--bridgeon-text-primary);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-gear:hover {
+            transform: scale(1.15) rotate(45deg) !important;
+        }
+
+        .bridgeon-icon-btn:active {
+            transform: scale(0.9);
+            transition-duration: 0.1s;
+        }
+
+        /* Dual Metric Tiles */
+        .bridgeon-tiles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .bridgeon-tile {
+            background: var(--bridgeon-card-bg);
+            border: 1px solid var(--bridgeon-border);
+            border-radius: 14px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1),
+                        border-color 0.3s ease,
+                        box-shadow 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+        }
+
+        .bridgeon-tile:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 24px -2px rgba(0, 0, 0, 0.35);
+        }
+
+        .bridgeon-tile:active {
+            transform: translateY(0px) scale(0.98);
+        }
+
+        .bridgeon-tile-work {
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .bridgeon-tile-break {
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        .bridgeon-tile-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .bridgeon-tile:hover .bridgeon-tile-icon-box {
+            transform: scale(1.15) rotate(-6deg);
+        }
+
+        .bridgeon-tile-icon-work {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(2, 132, 199, 0.18));
+            box-shadow: 0 0 14px rgba(14, 165, 233, 0.3);
+        }
+
+        .bridgeon-tile-icon-break {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.18));
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+        }
+
+        .bridgeon-tile-texts {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .bridgeon-tile-label {
+            font-size: 10.5px;
+            font-weight: 500;
+            color: var(--bridgeon-text-secondary);
+            white-space: nowrap;
+        }
+
+        .bridgeon-tile-val {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--bridgeon-text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+        }
+
+        /* Progress Section */
+        .bridgeon-progress-section {
+            margin-bottom: 16px;
+        }
+
+        .bridgeon-progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .bridgeon-progress-label-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--bridgeon-text-secondary);
+            font-weight: 500;
+        }
+
+        .bridgeon-progress-rem-val {
+            font-weight: 700;
+            color: var(--bridgeon-text-primary);
+        }
+
+        .bridgeon-progress-track {
+            width: 100%;
+            height: 7.5px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-progress-track {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .bridgeon-progress-fill {
+            height: 100%;
+            width: 78%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #F59E0B, #FBBF24);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+            transition: width 0.8s cubic-bezier(0.34, 1.25, 0.64, 1), background 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bridgeon-progress-fill::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0) 100%);
+            animation: bridgeon-shimmer 2.6s ease-in-out infinite;
+            border-radius: 999px;
+        }
+
+        @keyframes bridgeon-shimmer {
+            0% { transform: translateX(-150%) skewX(-15deg); }
+            100% { transform: translateX(250%) skewX(-15deg); }
+        }
+
+        /* Footer */
+        .bridgeon-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--bridgeon-border);
+        }
+
+        .bridgeon-footer-label {
+            font-size: 13px;
+            color: var(--bridgeon-text-secondary);
+            font-weight: 500;
+        }
+
+        .bridgeon-footer-status {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bridgeon-accent);
+            letter-spacing: 0.03em;
+            text-shadow: 0 0 12px var(--bridgeon-accent);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* SETTINGS CARD */
+        .bridgeon-settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .bridgeon-settings-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--bridgeon-text-primary);
+        }
+
+        .bridgeon-setting-row {
+            margin-bottom: 14px;
+        }
+
+        .bridgeon-setting-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--bridgeon-text-secondary);
+            margin-bottom: 7px;
+            display: block;
+        }
+
+        /* Theme Segmented */
+        .bridgeon-theme-picker {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 3px;
+            border-radius: 12px;
+            border: 1px solid var(--bridgeon-border);
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-theme-picker {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .bridgeon-theme-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--bridgeon-text-secondary);
+            padding: 6px 0;
+            font-size: 11.5px;
+            font-weight: 600;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+        .bridgeon-theme-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--bridgeon-text-primary);
+            transform: translateY(-1px);
+        }
+
+        .bridgeon-theme-btn.active {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: #38BDF8;
+            color: #38BDF8;
+            box-shadow: 0 2px 8px rgba(56, 189, 248, 0.25);
+        }
+
+        /* Colors */
+        .bridgeon-colors-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px 4px;
+        }
+
+        .bridgeon-color-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        border-color 0.2s ease,
+                        box-shadow 0.25s ease;
+            outline: none;
+            padding: 0;
+        }
+
+        .bridgeon-color-dot:hover {
+            transform: scale(1.22);
+        }
+
+        .bridgeon-color-dot:active {
+            transform: scale(0.92);
+        }
+
+        .bridgeon-color-dot.active {
+            border-color: #FFFFFF;
+            box-shadow: 0 0 0 2px var(--bridgeon-accent), 0 0 12px var(--bridgeon-accent);
+            transform: scale(1.12);
+        }
+
+        /* Slider */
+        .bridgeon-slider-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .bridgeon-range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            outline: none;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-range-slider {
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        .bridgeon-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #38BDF8;
+            box-shadow: 0 0 8px #38BDF8;
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+        }
+
+        .bridgeon-range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            box-shadow: 0 0 12px #38BDF8;
+        }
+
+        /* Toggle switch */
+        .bridgeon-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bridgeon-switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 22px;
+        }
+
+        .bridgeon-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .bridgeon-switch-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            transition: 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-switch-slider {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .bridgeon-switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .bridgeon-switch input:checked + .bridgeon-switch-slider {
+            background-color: #38BDF8;
+        }
+
+        .bridgeon-switch input:checked + .bridgeon-switch-slider:before {
+            transform: translateX(16px);
+        }
+
+        .bridgeon-action-link-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--bridgeon-border);
+            color: var(--bridgeon-text-primary);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.24s cubic-bezier(0.34, 1.3, 0.64, 1),
+                        background 0.24s ease,
+                        border-color 0.24s ease,
+                        box-shadow 0.24s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            outline: none;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+
+        .bridgeon-action-link-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .bridgeon-action-link-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* MINIMIZED ISLAND PILL */
+        .bridgeon-island-view {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bridgeon-bg);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--bridgeon-border);
+            border-radius: 999px;
+            padding: 7px 14px;
+            box-shadow: var(--bridgeon-glow);
+            color: var(--bridgeon-text-primary);
+            cursor: pointer;
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.28s ease;
+            user-select: none;
+        }
+
+        .bridgeon-island-view:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+        }
+
+        .bridgeon-island-text {
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .bridgeon-island-expand-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--bridgeon-text-secondary);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-left: auto;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .bridgeon-island-view:hover .bridgeon-island-expand-btn {
+            transform: scale(1.15);
+            color: var(--bridgeon-text-primary);
+        }
+
+        /* ===================================================
+           INTERACTIVE WIDGET CONTAINER & VIEW TRANSITIONS
+           =================================================== */
+        #interactive-widget-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 380px;
+        }
+
+        #bridgeon-cards-wrapper {
+            position: relative;
+            width: 285px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.25, 0.64, 1),
+                        opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+
+        .bridgeon-is-minimized #bridgeon-cards-wrapper {
+            display: none !important;
+            opacity: 0;
+            transform: scale(0.65) translateY(-20px);
+            pointer-events: none;
+        }
+
+        .bridgeon-is-minimized #interactive-island-view {
+            display: inline-flex !important;
+            animation: bridgeon-spring-pill 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        :not(.bridgeon-is-minimized) #interactive-island-view {
+            display: none !important;
+        }
+
+        :not(.bridgeon-is-minimized) #bridgeon-cards-wrapper {
+            display: block;
+            animation: bridgeon-card-bloom 0.42s cubic-bezier(0.34, 1.25, 0.64, 1);
+        }
+
+        /* Cross-sliding between Main View and Settings View */
+        #interactive-main-view,
+        #interactive-settings-view {
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1),
+                        filter 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.35s;
+            will-change: transform, opacity, filter;
+            backface-visibility: hidden;
+        }
+
+        .bridgeon-show-main #interactive-main-view {
+            opacity: 1 !important;
+            transform: translate3d(0, 0, 0) scale(1) !important;
+            filter: blur(0px) !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
+            position: relative !important;
+            display: block !important;
+        }
+
+        .bridgeon-show-main #interactive-settings-view {
+            opacity: 0 !important;
+            transform: translate3d(24px, 0, 0) scale(0.96) !important;
+            filter: blur(3px) !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            top: 0; left: 0; right: 0;
+        }
+
+        .bridgeon-show-settings #interactive-main-view {
+            opacity: 0 !important;
+            transform: translate3d(-24px, 0, 0) scale(0.96) !important;
+            filter: blur(3px) !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            top: 0; left: 0; right: 0;
+        }
+
+        .bridgeon-show-settings #interactive-settings-view {
+            opacity: 1 !important;
+            transform: translate3d(0, 0, 0) scale(1) !important;
+            filter: blur(0px) !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
+            position: relative !important;
+            display: block !important;
+        }
+
+        @keyframes bridgeon-card-bloom {
+            0% {
+                opacity: 0;
+                transform: scale(0.86) translateY(-14px);
+                filter: blur(5px);
+            }
+            60% {
+                transform: scale(1.02) translateY(1px);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes bridgeon-spring-pill {
+            0% {
+                opacity: 0;
+                transform: scale(0.68) translateY(-10px);
+                filter: blur(4px);
+            }
+            65% {
+                transform: scale(1.06) translateY(1px);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+        }
+
+        /* Gallery Row */
+        .cards-gallery-row {
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .show-gallery .cards-gallery-row {
+            display: flex;
+        }
+
+        .show-gallery #interactive-widget-box {
+            display: none;
+        }
+
+        .interactive-tag {
+            margin-top: 14px;
+            font-size: 11.5px;
+            color: var(--bridgeon-text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===================================================
+           WHAT'S NEW CENTERED MODAL OVERLAY
+           =================================================== */
+        #bridgeon-whats-new-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000000;
+            background: rgba(2, 8, 20, 0.72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.36s;
+            font-family: inherit;
+        }
+
+        #bridgeon-whats-new-overlay.bridgeon-modal-show {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .bridgeon-wn-modal {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(8, 22, 48, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 26px;
+            padding: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            transform: scale(0.85) translateY(22px);
+            opacity: 0;
+            transition: transform 0.42s cubic-bezier(0.34, 1.32, 0.64, 1),
+                        opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        #bridgeon-whats-new-overlay.bridgeon-modal-show .bridgeon-wn-modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-wn-modal {
+            background: rgba(255, 255, 255, 0.98);
+            color: #0F172A;
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .bridgeon-wn-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .bridgeon-wn-badge-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.15));
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38BDF8;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 999px;
+            margin-bottom: 6px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .bridgeon-wn-title {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+        }
+
+        .bridgeon-wn-close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #94A3B8;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-wn-close-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .bridgeon-wn-close-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: #FFFFFF;
+            transform: scale(1.12);
+        }
+
+        .bridgeon-wn-features {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            margin-bottom: 20px;
+        }
+
+        .bridgeon-wn-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
+            border-radius: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        .bridgeon-modal-show .bridgeon-wn-item:nth-child(1) { animation: bridgeon-slide-up 0.4s 0.06s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .bridgeon-modal-show .bridgeon-wn-item:nth-child(2) { animation: bridgeon-slide-up 0.4s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .bridgeon-modal-show .bridgeon-wn-item:nth-child(3) { animation: bridgeon-slide-up 0.4s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .bridgeon-modal-show .bridgeon-wn-item:nth-child(4) { animation: bridgeon-slide-up 0.4s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .bridgeon-modal-show .bridgeon-wn-item:nth-child(5) { animation: bridgeon-slide-up 0.4s 0.30s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        @keyframes bridgeon-slide-up {
+            0% { opacity: 0; transform: translateY(16px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-wn-item {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .bridgeon-wn-item-icon {
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .bridgeon-wn-item-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bridgeon-wn-item-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .bridgeon-wn-item-desc {
+            font-size: 11px;
+            color: #94A3B8;
+            line-height: 1.4;
+        }
+
+        [data-bridgeon-theme="light"] .bridgeon-wn-item-desc {
+            color: #64748B;
+        }
+
+        .bridgeon-wn-action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10B981, #059669);
+            border: none;
+            color: #FFFFFF;
+            font-size: 13.5px;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+            transition: transform 0.24s cubic-bezier(0.34, 1.4, 0.64, 1),
+                        box-shadow 0.24s ease,
+                        filter 0.24s ease;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .bridgeon-wn-action-btn:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.55);
+            filter: brightness(1.08);
+        }
+
+        .bridgeon-wn-action-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+    </style>
+</head>
+<body data-bridgeon-theme="dark">
+
+    <div class="showcase-header">
+        <h1 class="showcase-title">Bridgeon Attendance Widget v1.3.0</h1>
+        <p class="showcase-subtitle">Apple Liquid Glass UI • Smooth Micro-Animations • 9 to 5 Break Restrictions</p>
+        <div class="demo-bar">
+            <button id="open-wn-demo" class="demo-trigger-btn">✨ Open What's New Dialog</button>
+            <button id="reset-wn-demo" class="demo-trigger-btn" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15); color:#94A3B8;">🔄 Reset First-Time State</button>
+        </div>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="mode-switcher">
+        <button id="tab-interactive" class="mode-btn active">🎮 Live Interactive Widget</button>
+        <button id="tab-gallery" class="mode-btn">🖼️ All States at a Glance</button>
+    </div>
+
+    <div class="showcase-container">
+
+        <!-- 1. LIVE INTERACTIVE WIDGET (Exact Tampermonkey Behavior) -->
+        <div id="interactive-widget-box">
+            <!-- Minimized Pill -->
+            <div id="interactive-island-view" class="bridgeon-island-view" title="Click to expand card">
+                <div class="bridgeon-beacon-wrapper">
+                    <div class="bridgeon-beacon-pulse"></div>
+                    <div class="bridgeon-beacon-pulse bridgeon-beacon-pulse-delayed"></div>
+                    <div class="bridgeon-beacon-dot"></div>
+                </div>
+                <span class="bridgeon-island-text">☕ 13m left</span>
+                <div class="bridgeon-island-expand-btn">⌃</div>
+            </div>
+
+            <!-- Cards Wrapper with Sliding Cross-Transition -->
+            <div id="bridgeon-cards-wrapper" class="bridgeon-show-main">
+                <!-- MAIN VIEW -->
+                <div id="interactive-main-view" class="bridgeon-glass-card">
+                    <div class="bridgeon-header">
+                        <div class="bridgeon-status-group">
+                            <div class="bridgeon-beacon-wrapper">
+                                <div class="bridgeon-beacon-pulse"></div>
+                                <div class="bridgeon-beacon-pulse bridgeon-beacon-pulse-delayed"></div>
+                                <div class="bridgeon-beacon-dot"></div>
+                            </div>
+                            <div class="bridgeon-status-info">
+                                <div class="bridgeon-status-title">On Time</div>
+                                <div class="bridgeon-status-sub">IN 03:39 PM</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <button id="widget-settings-btn" class="bridgeon-icon-btn btn-gear" title="Settings">⚙</button>
+                            <button id="widget-minimize-btn" class="bridgeon-icon-btn" title="Minimize">−</button>
+                        </div>
+                    </div>
+
+                    <!-- Dual Metric Tiles -->
+                    <div class="bridgeon-tiles-grid">
+                        <div class="bridgeon-tile bridgeon-tile-work">
+                            <div class="bridgeon-tile-icon-box bridgeon-tile-icon-work">🏢</div>
+                            <div class="bridgeon-tile-texts">
+                                <span class="bridgeon-tile-label">Work Time</span>
+                                <span class="bridgeon-tile-val">5h 22m</span>
+                            </div>
+                        </div>
+                        <div class="bridgeon-tile bridgeon-tile-break">
+                            <div class="bridgeon-tile-icon-box bridgeon-tile-icon-break">🚶</div>
+                            <div class="bridgeon-tile-texts">
+                                <span class="bridgeon-tile-label">Break Time (9-5)</span>
+                                <span class="bridgeon-tile-val">1h 17m</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Break Progress Bar -->
+                    <div class="bridgeon-progress-section">
+                        <div class="bridgeon-progress-header">
+                            <div class="bridgeon-progress-label-group">
+                                <span>☕</span>
+                                <span>Break Time Left</span>
+                            </div>
+                            <span class="bridgeon-progress-rem-val">13m left</span>
+                        </div>
+                        <div class="bridgeon-progress-track">
+                            <div class="bridgeon-progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bridgeon-footer">
+                        <span class="bridgeon-footer-label">Status</span>
+                        <span class="bridgeon-footer-status">IN</span>
+                    </div>
+                </div>
+
+                <!-- SETTINGS VIEW -->
+                <div id="interactive-settings-view" class="bridgeon-glass-card">
+                    <div class="bridgeon-settings-header">
+                        <div class="bridgeon-settings-title">
+                            <span>⚙</span>
+                            <span>Settings</span>
+                        </div>
+                        <button id="widget-settings-close-btn" class="bridgeon-icon-btn" title="Close">✕</button>
+                    </div>
+
+                    <!-- Theme Segmented -->
+                    <div class="bridgeon-setting-row">
+                        <span class="bridgeon-setting-label">Theme</span>
+                        <div class="bridgeon-theme-picker">
+                            <button class="bridgeon-theme-btn active" data-theme="dark">
+                                <span>🌙</span> Dark
+                            </button>
+                            <button class="bridgeon-theme-btn" data-theme="light">
+                                <span>☀️</span> Light
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Accent Color -->
+                    <div class="bridgeon-setting-row">
+                        <span class="bridgeon-setting-label">Accent Color</span>
+                        <div class="bridgeon-colors-row">
+                            <button class="bridgeon-color-dot active" style="background:#10B981;" data-color="#10B981" title="Emerald"></button>
+                            <button class="bridgeon-color-dot" style="background:#3B82F6;" data-color="#3B82F6" title="Blue"></button>
+                            <button class="bridgeon-color-dot" style="background:#8B5CF6;" data-color="#8B5CF6" title="Purple"></button>
+                            <button class="bridgeon-color-dot" style="background:#F59E0B;" data-color="#F59E0B" title="Amber"></button>
+                            <button class="bridgeon-color-dot" style="background:#EC4899;" data-color="#EC4899" title="Rose"></button>
+                            <button class="bridgeon-color-dot" style="background:#EF4444;" data-color="#EF4444" title="Crimson"></button>
+                        </div>
+                    </div>
+
+                    <!-- Card Opacity -->
+                    <div class="bridgeon-setting-row">
+                        <div class="bridgeon-slider-header">
+                            <span class="bridgeon-setting-label" style="margin-bottom:0;">Card Opacity</span>
+                            <span id="preview-opacity-readout" style="font-size:11.5px; font-weight:600; color:var(--bridgeon-text-secondary);">90%</span>
+                        </div>
+                        <input id="preview-opacity-slider" class="bridgeon-range-slider" type="range" min="50" max="100" value="90">
+                    </div>
+
+                    <!-- Compact Mode -->
+                    <div class="bridgeon-setting-row" style="margin-bottom:4px;">
+                        <div class="bridgeon-toggle-row">
+                            <div>
+                                <div style="font-size:12px; font-weight:600; color:var(--bridgeon-text-primary);">Compact Mode</div>
+                                <div style="font-size:10.5px; color:var(--bridgeon-text-secondary);">Shrink into island pill</div>
+                            </div>
+                            <label class="bridgeon-switch">
+                                <input id="preview-compact-toggle" type="checkbox">
+                                <span class="bridgeon-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Community & Feedback -->
+                    <div class="bridgeon-setting-row" style="margin-top:14px; margin-bottom:10px;">
+                        <span class="bridgeon-setting-label">Community & Feedback</span>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <a
+                                class="bridgeon-action-link-btn"
+                                href="https://github.com/A-Rafeef/bridgeon-timer/discussions"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="text-decoration:none; margin-top:0;"
+                            >
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>💬</span>
+                                    <div>
+                                        <div style="font-size:11.5px; font-weight:600;">Discussions</div>
+                                        <div style="font-size:9.5px; color:var(--bridgeon-text-secondary); font-weight:400;">Chat & connect with users</div>
+                                    </div>
+                                </div>
+                                <span style="font-size:12px; color:var(--bridgeon-text-secondary);">↗</span>
+                            </a>
+
+                            <a
+                                class="bridgeon-action-link-btn"
+                                href="https://github.com/A-Rafeef/bridgeon-timer/discussions/new?category=ideas"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="text-decoration:none; margin-top:0;"
+                            >
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>💡</span>
+                                    <div>
+                                        <div style="font-size:11.5px; font-weight:600;">Suggest an Idea</div>
+                                        <div style="font-size:9.5px; color:var(--bridgeon-text-secondary); font-weight:400;">Request features or give feedback</div>
+                                    </div>
+                                </div>
+                                <span style="font-size:12px; color:var(--bridgeon-text-secondary);">↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- View What's New -->
+                    <button id="preview-view-wn-btn" class="bridgeon-action-link-btn" style="margin-top:4px;">
+                        <span>✨ What's New in v1.3.0</span>
+                        <span style="font-size:13px;">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="interactive-tag">
+                <span>💡</span> Click ⚙ to slide to Settings, or − to minimize into Island Pill!
+            </div>
+        </div>
+
+        <!-- 2. GALLERY VIEW (Side-by-Side Reference) -->
+        <div class="cards-gallery-row">
+            <!-- Main Card Replica -->
+            <div class="bridgeon-glass-card">
+                <div class="bridgeon-header">
+                    <div class="bridgeon-status-group">
+                        <div class="bridgeon-beacon-wrapper">
+                            <div class="bridgeon-beacon-pulse"></div>
+                            <div class="bridgeon-beacon-pulse bridgeon-beacon-pulse-delayed"></div>
+                            <div class="bridgeon-beacon-dot"></div>
+                        </div>
+                        <div class="bridgeon-status-info">
+                            <div class="bridgeon-status-title">On Time</div>
+                            <div class="bridgeon-status-sub">IN 03:39 PM</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button class="bridgeon-icon-btn btn-gear" title="Settings">⚙</button>
+                        <button class="bridgeon-icon-btn" title="Minimize">−</button>
+                    </div>
+                </div>
+
+                <div class="bridgeon-tiles-grid">
+                    <div class="bridgeon-tile bridgeon-tile-work">
+                        <div class="bridgeon-tile-icon-box bridgeon-tile-icon-work">🏢</div>
+                        <div class="bridgeon-tile-texts">
+                            <span class="bridgeon-tile-label">Work Time</span>
+                            <span class="bridgeon-tile-val">5h 22m</span>
+                        </div>
+                    </div>
+                    <div class="bridgeon-tile bridgeon-tile-break">
+                        <div class="bridgeon-tile-icon-box bridgeon-tile-icon-break">🚶</div>
+                        <div class="bridgeon-tile-texts">
+                            <span class="bridgeon-tile-label">Break Time (9-5)</span>
+                            <span class="bridgeon-tile-val">1h 17m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bridgeon-progress-section">
+                    <div class="bridgeon-progress-header">
+                        <div class="bridgeon-progress-label-group">
+                            <span>☕</span>
+                            <span>Break Time Left</span>
+                        </div>
+                        <span class="bridgeon-progress-rem-val">13m left</span>
+                    </div>
+                    <div class="bridgeon-progress-track">
+                        <div class="bridgeon-progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="bridgeon-footer">
+                    <span class="bridgeon-footer-label">Status</span>
+                    <span class="bridgeon-footer-status">IN</span>
+                </div>
+            </div>
+
+            <!-- Island Pill Replica -->
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
+                <div class="bridgeon-island-view">
+                    <div class="bridgeon-beacon-wrapper">
+                        <div class="bridgeon-beacon-pulse"></div>
+                        <div class="bridgeon-beacon-pulse bridgeon-beacon-pulse-delayed"></div>
+                        <div class="bridgeon-beacon-dot"></div>
+                    </div>
+                    <span class="bridgeon-island-text">☕ 13m left</span>
+                    <div class="bridgeon-island-expand-btn">⌃</div>
+                </div>
+                <span style="font-size:12px; color:#94A3B8;">Compact Minimized Pill</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- WHAT'S NEW CENTERED MODAL -->
+    <div id="bridgeon-whats-new-overlay">
+        <div class="bridgeon-wn-modal">
+            <div class="bridgeon-wn-header">
+                <div>
+                    <span class="bridgeon-wn-badge-tag">✨ What's New</span>
+                    <h2 class="bridgeon-wn-title">Bridgeon Attendance v1.3.0</h2>
+                </div>
+                <button id="modal-close-btn" class="bridgeon-wn-close-btn" title="Close">✕</button>
+            </div>
+
+            <div class="bridgeon-wn-features">
+                <div class="bridgeon-wn-item">
+                    <div class="bridgeon-wn-item-icon">💎</div>
+                    <div class="bridgeon-wn-item-content">
+                        <span class="bridgeon-wn-item-title">Apple Liquid Glass & Smooth Animations</span>
+                        <span class="bridgeon-wn-item-desc">Hardware-accelerated cross-sliding views, dual radiating radar beacons, and spring morphing.</span>
+                    </div>
+                </div>
+
+                <div class="bridgeon-wn-item">
+                    <div class="bridgeon-wn-item-icon">⏰</div>
+                    <div class="bridgeon-wn-item-content">
+                        <span class="bridgeon-wn-item-title">Smart 9:00 AM - 5:00 PM Break Window</span>
+                        <span class="bridgeon-wn-item-desc">Break time is now strictly calculated between office hours (9 to 5), preventing overnight run-ons.</span>
+                    </div>
+                </div>
+
+                <div class="bridgeon-wn-item">
+                    <div class="bridgeon-wn-item-icon">💬</div>
+                    <div class="bridgeon-wn-item-content">
+                        <span class="bridgeon-wn-item-title">Community Discussions & Ideas</span>
+                        <span class="bridgeon-wn-item-desc">Quick direct links in Settings to chat with users and propose new feature ideas.</span>
+                    </div>
+                </div>
+
+                <div class="bridgeon-wn-item">
+                    <div class="bridgeon-wn-item-icon">☕</div>
+                    <div class="bridgeon-wn-item-content">
+                        <span class="bridgeon-wn-item-title">90-Minute Allowance Shimmer Bar</span>
+                        <span class="bridgeon-wn-item-desc">Visual break track with light-sweep shimmer and amber/red alert stages.</span>
+                    </div>
+                </div>
+
+                <div class="bridgeon-wn-item">
+                    <div class="bridgeon-wn-item-icon">💊</div>
+                    <div class="bridgeon-wn-item-content">
+                        <span class="bridgeon-wn-item-title">Dynamic Island Minimized Pill</span>
+                        <span class="bridgeon-wn-item-desc">Click Minimize anytime to shrink cleanly into an unobtrusive pill.</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="modal-confirm-btn" class="bridgeon-wn-action-btn">
+                Got it, Let's Explore! 🚀
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const body = document.body;
+        const overlay = document.getElementById('bridgeon-whats-new-overlay');
+        const widgetBox = document.getElementById('interactive-widget-box');
+        const cardsWrapper = document.getElementById('bridgeon-cards-wrapper');
+        const islandView = document.getElementById('interactive-island-view');
+
+        // First-time show simulation
+        const DEMO_SEEN_KEY = 'bridgeon_preview_whats_new_seen_v130';
+        if (!localStorage.getItem(DEMO_SEEN_KEY)) {
+            setTimeout(() => {
+                overlay.classList.add('bridgeon-modal-show');
+            }, 400);
+        }
+
+        function closeModal() {
+            overlay.classList.remove('bridgeon-modal-show');
+            localStorage.setItem(DEMO_SEEN_KEY, 'true');
+        }
+
+        document.getElementById('modal-close-btn').onclick = closeModal;
+        document.getElementById('modal-confirm-btn').onclick = closeModal;
+        overlay.onclick = (e) => {
+            if (e.target === overlay) closeModal();
+        };
+
+        // Manual open
+        document.getElementById('open-wn-demo').onclick = () => {
+            overlay.classList.add('bridgeon-modal-show');
+        };
+        document.getElementById('preview-view-wn-btn').onclick = () => {
+            overlay.classList.add('bridgeon-modal-show');
+        };
+
+        // Reset demo
+        document.getElementById('reset-wn-demo').onclick = () => {
+            localStorage.removeItem(DEMO_SEEN_KEY);
+            alert("First-time state reset! Refresh the page to see the automatic popup again.");
+        };
+
+        // Esc key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // -------------------------------------------------------------
+        // LIVE INTERACTIVE WIDGET TRANSITIONS
+        // -------------------------------------------------------------
+        const settingsBtn = document.getElementById('widget-settings-btn');
+        const closeSettingsBtn = document.getElementById('widget-settings-close-btn');
+        const minimizeBtn = document.getElementById('widget-minimize-btn');
+        const compactToggle = document.getElementById('preview-compact-toggle');
+
+        settingsBtn.onclick = (e) => {
+            e.stopPropagation();
+            cardsWrapper.classList.remove('bridgeon-show-main');
+            cardsWrapper.classList.add('bridgeon-show-settings');
+        };
+
+        closeSettingsBtn.onclick = (e) => {
+            e.stopPropagation();
+            cardsWrapper.classList.remove('bridgeon-show-settings');
+            cardsWrapper.classList.add('bridgeon-show-main');
+        };
+
+        minimizeBtn.onclick = (e) => {
+            e.stopPropagation();
+            widgetBox.classList.add('bridgeon-is-minimized');
+            compactToggle.checked = true;
+        };
+
+        islandView.onclick = () => {
+            widgetBox.classList.remove('bridgeon-is-minimized');
+            cardsWrapper.classList.remove('bridgeon-show-settings');
+            cardsWrapper.classList.add('bridgeon-show-main');
+            compactToggle.checked = false;
+        };
+
+        compactToggle.onchange = (e) => {
+            if (e.target.checked) {
+                widgetBox.classList.add('bridgeon-is-minimized');
+            } else {
+                widgetBox.classList.remove('bridgeon-is-minimized');
+            }
+        };
+
+        // -------------------------------------------------------------
+        // TAB SWITCHER (Interactive vs Gallery)
+        // -------------------------------------------------------------
+        const tabInteractive = document.getElementById('tab-interactive');
+        const tabGallery = document.getElementById('tab-gallery');
+        const showcaseContainer = document.querySelector('.showcase-container');
+
+        tabInteractive.onclick = () => {
+            tabInteractive.classList.add('active');
+            tabGallery.classList.remove('active');
+            showcaseContainer.classList.remove('show-gallery');
+        };
+
+        tabGallery.onclick = () => {
+            tabGallery.classList.add('active');
+            tabInteractive.classList.remove('active');
+            showcaseContainer.classList.add('show-gallery');
+        };
+
+        // -------------------------------------------------------------
+        // THEME & COLOR CONTROLS
+        // -------------------------------------------------------------
+        const themeBtns = document.querySelectorAll('.bridgeon-theme-btn');
+        themeBtns.forEach(btn => {
+            btn.onclick = () => {
+                themeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const theme = btn.getAttribute('data-theme');
+                body.setAttribute('data-bridgeon-theme', theme);
+            };
+        });
+
+        const colorDots = document.querySelectorAll('.bridgeon-color-dot');
+        colorDots.forEach(dot => {
+            dot.onclick = () => {
+                colorDots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                const color = dot.getAttribute('data-color');
+                document.documentElement.style.setProperty('--bridgeon-accent', color);
+            };
+        });
+
+        const slider = document.getElementById('preview-opacity-slider');
+        const readout = document.getElementById('preview-opacity-readout');
+        slider.oninput = (e) => {
+            const val = e.target.value;
+            readout.textContent = `${val}%`;
+            document.documentElement.style.setProperty('--bridgeon-opacity', (val / 100).toFixed(2));
+        };
+    </script>
+</body>
+</html>
